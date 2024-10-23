@@ -1,4 +1,6 @@
-// Структура для хранения переменной с типом и значением
+#include <stdlib.h>
+
+// Структура для хранения переменной
 struct Variable {
   String name;
   String type;  // Тип переменной: "int", "float", "string"
@@ -9,8 +11,8 @@ struct Variable {
   String stringValue;
 };
 
-// Массив для хранения переменных (максимум 10 переменных)
-Variable variables[10];
+// Динамический массив для переменных
+Variable* variables = NULL;
 int varCount = 0;  // Количество переменных
 
 void setup() {
@@ -119,84 +121,92 @@ void handleAssignment(String command) {
 
 // Установка переменной (int)
 void setVariable(String name, int value) {
-  for (int i = 0; i < varCount; i++) {
-    if (variables[i].name == name) {
-      variables[i].intValue = value;
-      variables[i].type = "int";
-      Serial.print("Updated ");
-      Serial.print(name);
-      Serial.print(" = ");
-      Serial.println(value);
-      return;
-    }
-  }
-
-  if (varCount < 10) {
-    variables[varCount].name = name;
-    variables[varCount].intValue = value;
-    variables[varCount].type = "int";
-    varCount++;
-    Serial.print("Assigned ");
+  int index = findVariable(name);
+  
+  if (index != -1) {
+    // Переменная уже существует, обновляем
+    variables[index].intValue = value;
+    variables[index].type = "int";
+    Serial.print("Updated ");
     Serial.print(name);
     Serial.print(" = ");
     Serial.println(value);
   } else {
-    Serial.println("Variable limit reached");
+    // Переменная новая, добавляем
+    addVariable(name, "int");
+    variables[varCount - 1].intValue = value;
+    Serial.print("Assigned ");
+    Serial.print(name);
+    Serial.print(" = ");
+    Serial.println(value);
   }
 }
 
 // Установка переменной (float)
 void setVariable(String name, float value) {
-  for (int i = 0; i < varCount; i++) {
-    if (variables[i].name == name) {
-      variables[i].floatValue = value;
-      variables[i].type = "float";
-      Serial.print("Updated ");
-      Serial.print(name);
-      Serial.print(" = ");
-      Serial.println(value);
-      return;
-    }
-  }
-
-  if (varCount < 10) {
-    variables[varCount].name = name;
-    variables[varCount].floatValue = value;
-    variables[varCount].type = "float";
-    varCount++;
-    Serial.print("Assigned ");
+  int index = findVariable(name);
+  
+  if (index != -1) {
+    // Переменная уже существует, обновляем
+    variables[index].floatValue = value;
+    variables[index].type = "float";
+    Serial.print("Updated ");
     Serial.print(name);
     Serial.print(" = ");
     Serial.println(value);
   } else {
-    Serial.println("Variable limit reached");
+    // Переменная новая, добавляем
+    addVariable(name, "float");
+    variables[varCount - 1].floatValue = value;
+    Serial.print("Assigned ");
+    Serial.print(name);
+    Serial.print(" = ");
+    Serial.println(value);
   }
 }
 
 // Установка переменной (string)
 void setVariable(String name, String value) {
-  for (int i = 0; i < varCount; i++) {
-    if (variables[i].name == name) {
-      variables[i].stringValue = value;
-      variables[i].type = "string";
-      Serial.print("Updated ");
-      Serial.print(name);
-      Serial.print(" = ");
-      Serial.println(value);
-      return;
-    }
-  }
-
-  if (varCount < 10) {
-    variables[varCount].name = name;
-    variables[varCount].stringValue = value;
-    variables[varCount].type = "string";
-    varCount++;
-    Serial.print("Assigned ");
+  int index = findVariable(name);
+  
+  if (index != -1) {
+    // Переменная уже существует, обновляем
+    variables[index].stringValue = value;
+    variables[index].type = "string";
+    Serial.print("Updated ");
     Serial.print(name);
     Serial.print(" = ");
     Serial.println(value);
   } else {
-    Serial.println("Variable limit reached");
+    // Переменная новая, добавляем
+    addVariable(name, "string");
+    variables[varCount - 1].stringValue = value;
+    Serial.print("Assigned ");
+    Serial.print(name);
+    Serial.print(" = ");
+    Serial.println(value);
   }
+}
+
+// Функция для поиска переменной по имени
+int findVariable(String name) {
+  for (int i = 0; i < varCount; i++) {
+    if (variables[i].name == name) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// Функция для добавления новой переменной
+void addVariable(String name, String type) {
+  // Увеличиваем массив на одну переменную
+  variables = (Variable*) realloc(variables, (varCount + 1) * sizeof(Variable));
+  
+  // Присваиваем новое имя и тип переменной
+  variables[varCount].name = name;
+  variables[varCount].type = type;
+  
+  // Увеличиваем количество переменных
+  varCount++;
 }
