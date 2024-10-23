@@ -19,7 +19,7 @@ void setup() {
   Serial.begin(115200);
 }
 
-void loop() {
+void loop(){
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');
     command.trim();
