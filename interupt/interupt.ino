@@ -36,6 +36,25 @@ void loop() {
   }
 }
 
+// void executeCommand(String command) {
+//     command.trim(); // Удаляем пробелы
+//     if (command == "LED_ON") {
+//         digitalWrite(ledPin, HIGH);
+//         Serial.println("LED включен");
+//     } else if (command == "LED_OFF") {
+//         digitalWrite(ledPin, LOW);
+//         Serial.println("LED выключен");
+//     } else if (command.startsWith("DELAY_")) {
+//         int delayTime = command.substring(6).toInt();
+//         delay(delayTime);
+//         Serial.print("Задержка на ");
+//         Serial.print(delayTime);
+//         Serial.println(" мс");
+//     } else {
+//         Serial.println("Неизвестная команда: " + command);
+//     }
+// }
+
 // Обработка print.serial()
 void handlePrintSerial(String command) {
   int startIndex = command.indexOf('"');
