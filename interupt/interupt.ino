@@ -15,8 +15,7 @@ struct Variable {
 };
 
 // Массив доступных пинов
-int pinArray[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};  // Массив пинов на плате
-int pinCount = sizeof(pinArray) / sizeof(pinArray[0]);       // Количество пинов
+
 
 
 // Структура для хранения команды
@@ -56,7 +55,7 @@ void loop() {
     String command = Serial.readStringUntil('\n');
     command.trim();
     processCommand(command);
-    handlePinArrayCommand(command);
+    handlePinCommand(command);
   }
 }
 
@@ -286,55 +285,116 @@ bool isNumeric(String str) {
   return true;
 }
 
-void handlePinArrayCommand(String input) {
-  // Проверка на запись пина (writePinArray.индекс.состояние)
-  if (input.startsWith("writePinArray.")) {
-    int dotPos = input.indexOf('.', 13);  // Поиск второй точки после "writePinArray."
+
+// Функция для работы с пинами
+/*void handlePinCommand(String input) {
+  // Проверка на запись пина (writePin.номер.состояние)
+  if (input.startsWith("writePin.")) {
+    int dotPos = input.indexOf('.', 9);  // Поиск второй точки
     if (dotPos != -1) {
-      // Извлечение индекса массива и состояния пина
-      String pinIndexStr = input.substring(13, dotPos);
+      // Извлечение номера пина и состояния
+      String pinNumberStr = input.substring(9, dotPos);
       String pinStateStr = input.substring(dotPos + 1);
       
-      int pinIndex = pinIndexStr.toInt();
+      int pinNumber = pinNumberStr.toInt();
       int pinState = pinStateStr.toInt();
       
-      // Проверка допустимости индекса и состояния
-      if (pinIndex >= 0 && pinIndex < pinCount && (pinState == HIGH || pinState == LOW)) {
-        int realPin = pinArray[pinIndex];  // Получаем реальный номер пина
-        pinMode(realPin, OUTPUT);
-        digitalWrite(realPin, pinState);
+      // Проверка допустимости номера пина и состояния
+      if (pinNumber >= 0 && (pinState == HIGH || pinState == LOW)) {
+        pinMode(pinNumber, OUTPUT);
+        digitalWrite(pinNumber, pinState);
         Serial.print("Pin ");
-        Serial.print(realPin);
-        Serial.print(" (index ");
-        Serial.print(pinIndex);
-        Serial.print(") set to ");
+        Serial.print(pinNumber);
+        Serial.print(" set to ");
         Serial.println(pinState == HIGH ? "HIGH" : "LOW");
       } else {
-        Serial.println("Invalid pin index or state.");
+        Serial.println("Invalid pin number or state.");
       }
     } else {
-      Serial.println("Syntax error in writePinArray command.");
+      Serial.println("Syntax error in writePin command.");
     }
   }
   
-  // Проверка на чтение пина (readPinArray.индекс)
-  else if (input.startsWith("readPinArray.")) {
-    String pinIndexStr = input.substring(13);
-    int pinIndex = pinIndexStr.toInt();
+  // Проверка на чтение пина (readPin.номер)
+  else if (input.startsWith("readPin.")) {
+    String pinNumberStr = input.substring(8);
+    int pinNumber = pinNumberStr.toInt();
     
-    if (pinIndex >= 0 && pinIndex < pinCount) {
-      int realPin = pinArray[pinIndex];  // Получаем реальный номер пина
-      pinMode(realPin, INPUT);
-      int pinValue = digitalRead(realPin);
+    if (pinNumber >= 0) {
+      pinMode(pinNumber, INPUT);
+      int pinValue = digitalRead(pinNumber);
       Serial.print("Pin ");
-      Serial.print(realPin);
-      Serial.print(" (index ");
-      Serial.print(pinIndex);
-      Serial.print(") is ");
+      Serial.print(pinNumber);
+      Serial.print(" is ");
       Serial.println(pinValue == HIGH ? "HIGH" : "LOW");
     } else {
-      Serial.println("Invalid pin index.");
+      Serial.println("Invalid pin number.");
     }
   }
+}*/
+
+// Функция для работы с пинами по номерам (без массива)
+void handlePinCommand(String input) {
+  Serial.print("Received command: ");
+  Serial.println(input);
+
+  // Разделим строку на части по точкам
+  int firstDot = input.indexOf('.');
+  int secondDot = input.indexOf('.', firstDot + 1);
+
+  // Проверим, что команда имеет правильный формат с двумя точками
+  if (firstDot != -1 && secondDot != -1) {
+    // Извлекаем команду (writePin или readPin)
+    String command = input.substring(0, firstDot);
+    // Извлекаем номер пина
+    String pinNumberStr = input.substring(firstDot + 1, secondDot);
+    // Извлекаем состояние пина (только для writePin)
+    String pinStateStr = input.substring(secondDot + 1);
+
+    int pinNumber = pinNumberStr.toInt();  // Преобразуем номер пина в число
+
+    // Если это команда для записи на пин
+    if (command == "writePin") {
+      Serial.println("Detected writePin command.");
+
+      int pinState = (pinStateStr == "HIGH") ? HIGH : (pinStateStr == "LOW") ? LOW : -1;
+
+      if (pinNumber >= 0 && (pinState == HIGH || pinState == LOW)) {
+        Serial.print("Setting pin ");
+        Serial.print(pinNumber);
+        Serial.print(" to state ");
+        Serial.println(pinState == HIGH ? "HIGH" : "LOW");
+
+        pinMode(pinNumber, OUTPUT);
+        digitalWrite(pinNumber, pinState);
+      } else {
+        Serial.println("Invalid pin number or state.");
+      }
+    }
+    // Если это команда для чтения с пина
+    else if (command == "readPin") {
+      Serial.println("Detected readPin command.");
+
+      if (pinNumber >= 0) {
+        pinMode(pinNumber, INPUT);
+        int pinValue = digitalRead(pinNumber);
+
+        Serial.print("Pin ");
+        Serial.print(pinNumber);
+        Serial.print(" is ");
+        Serial.println(pinValue == HIGH ? "HIGH" : "LOW");
+      } else {
+        Serial.println("Invalid pin number.");
+      }
+    }
+    // Если команда не распознана
+    else {
+      Serial.println("Unknown command.");
+    }
+  } else {
+    Serial.println("Syntax error in command.");
+  }
 }
+
+
 
