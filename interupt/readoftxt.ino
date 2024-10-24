@@ -75,6 +75,41 @@ void executeCommand(String command) {
         Serial.print(pin);
         Serial.print(" значение ");
         Serial.println(value);
+    } else if (command.startsWith("IF_")) {
+        String condition = command.substring(3);
+        int openParenIndex = condition.indexOf("(");
+        int closeParenIndex = condition.indexOf(")");
+
+        int openBraceIndex = condition.indexOf("{");
+        int closeBraceIndex = condition.indexOf("}");
+
+        if (openParenIndex != -1 && closeParenIndex != -1 &&
+            openBraceIndex != -1 && closeBraceIndex != -1 && 
+            closeBraceIndex > openBraceIndex) {
+            
+            String conditionValue = condition.substring(openParenIndex + 1, closeParenIndex).trim();
+            String commandsBlock = condition.substring(openBraceIndex + 1, closeBraceIndex).trim();
+            
+            if (conditionValue == "TRUE") {
+                // Разделяем команды по новой строке и выполняем каждую
+                int startIndex = 0;
+                int newlineIndex;
+                while ((newlineIndex = commandsBlock.indexOf('\n', startIndex)) != -1) {
+                    String cmd = commandsBlock.substring(startIndex, newlineIndex).trim();
+                    if (cmd.length() > 0) {
+                        executeCommand(cmd);
+                    }
+                    startIndex = newlineIndex + 1;
+                }
+                // Выполняем последнюю команду, если она есть
+                String lastCmd = commandsBlock.substring(startIndex).trim();
+                if (lastCmd.length() > 0) {
+                    executeCommand(lastCmd);
+                }
+            }
+        } else {
+            Serial.println("Неправильный формат команды IF");
+        }
     } else {
         Serial.println("Неизвестная команда: " + command);
     }
