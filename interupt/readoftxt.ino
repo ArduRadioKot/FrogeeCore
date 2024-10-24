@@ -1,4 +1,4 @@
-void executeCommand(String command) {
+/*void executeCommand(String command) {
     command.trim(); // Удаляем пробелы
     if (command == "LED_ON") {
         digitalWrite(ledPin, HIGH);
@@ -95,4 +95,4 @@ void executeCommand(String command) {
     } else {
         Serial.println("Неизвестная команда: " + command);
     }
-}
+}*/
