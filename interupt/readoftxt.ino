@@ -1,4 +1,35 @@
-/*void executeCommand(String command) {
+#include <FS.h> // Подключите библиотеку файловой системы
+#include <Arduino.h>
+
+const int ledPin = 2; // Пин для LED
+
+void setup() {
+    Serial.begin(115200);
+    pinMode(ledPin, OUTPUT);
+
+    if (!SPIFFS.begin()) {
+        Serial.println("Ошибка при инициализации SPIFFS");
+        return;
+    }
+
+    File file = SPIFFS.open("/commands.txt", "r");
+    if (!file) {
+        Serial.println("Не удалось открыть файл");
+        return;
+    }
+
+    while (file.available()) {
+        String command = file.readStringUntil('\n');
+        executeCommand(command);
+    }
+    file.close();
+}
+
+void loop() {
+    // Ваш основной код
+}
+
+void executeCommand(String command) {
     command.trim(); // Удаляем пробелы
     if (command == "LED_ON") {
         digitalWrite(ledPin, HIGH);
@@ -44,55 +75,7 @@
         Serial.print(pin);
         Serial.print(" значение ");
         Serial.println(value);
-    } else if (command.startsWith("PWM_")) {
-        int pin = command.substring(4, 5).toInt();
-        int value = command.substring(6).toInt();
-        ledcWrite(pin, value); // Используйте ledcWrite для ESP32
-        Serial.print("PWM на пине ");
-        Serial.print(pin);
-        Serial.print(" значение ");
-        Serial.println(value);
-    } else if (command.startsWith("MATH_ADD_")) {
-        int a = command.substring(9, command.indexOf('_', 9)).toInt();
-        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
-        Serial.print("Сумма ");
-        Serial.print(a);
-        Serial.print(" и ");
-        Serial.print(b);
-        Serial.print(" равна ");
-        Serial.println(a + b);
-    } else if (command.startsWith("MATH_SUB_")) {
-        int a = command.substring(9, command.indexOf('_', 9)).toInt();
-        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
-        Serial.print("Разность ");
-        Serial.print(a);
-        Serial.print(" и ");
-        Serial.print(b);
-        Serial.print(" равна ");
-        Serial.println(a - b);
-    } else if (command.startsWith("MATH_MUL_")) {
-        int a = command.substring(9, command.indexOf('_', 9)).toInt();
-        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
-        Serial.print("Произведение ");
-        Serial.print(a);
-        Serial.print(" и ");
-        Serial.print(b);
-        Serial.print(" равно ");
-        Serial.println(a * b);
-    } else if (command.startsWith("MATH_DIV_")) {
-        int a = command.substring(9, command.indexOf('_', 9)).toInt();
-        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
-        if (b != 0) {
-            Serial.print("Частное ");
-            Serial.print(a);
-            Serial.print(" и ");
-            Serial.print(b);
-            Serial.print(" равно ");
-            Serial.println((float)a / b);
-        } else {
-            Serial.println("Ошибка: Деление на ноль");
-        }
     } else {
         Serial.println("Неизвестная команда: " + command);
     }
-}*/
+}
