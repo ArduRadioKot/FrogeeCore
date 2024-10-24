@@ -1,32 +1,45 @@
-#include <FS.h> // Подключите библиотеку файловой системы
+#include <SD.h> // Подключите библиотеку SD
+#include <SPI.h> // Подключите библиотеку SPI
 #include <Arduino.h>
 
 const int ledPin = 2; // Пин для LED
+const int chipSelect = 10; // Пин выбора чипа для SD-карты
 
 void setup() {
     Serial.begin(115200);
     pinMode(ledPin, OUTPUT);
 
-    if (!SPIFFS.begin()) {
-        Serial.println("Ошибка при инициализации SPIFFS");
+    // Инициализация SD-карты
+    if (!SD.begin(chipSelect)) {
+        Serial.println("Ошибка при инициализации SD-карты");
         return;
     }
 
-    File file = SPIFFS.open("/commands.txt", "r");
+    File file = SD.open("/commands.txt", FILE_READ);
     if (!file) {
         Serial.println("Не удалось открыть файл");
         return;
     }
 
+}
+
+void loop() {
+    // Ваш основной код
+    File file = SD.open("/commands.txt", FILE_READ);
+    if (!file) {
+        Serial.println("Не удалось открыть файл");
+        return;
+    }
+
+    // Читаем команды из файла и выполняем их
     while (file.available()) {
         String command = file.readStringUntil('\n');
         executeCommand(command);
     }
     file.close();
-}
 
-void loop() {
-    // Ваш основной код
+    // После выполнения всех команд, можно добавить небольшую задержку перед повторным чтением
+    delay(1000); // Задержка перед повторным чтением файла
 }
 
 void executeCommand(String command) {
@@ -95,7 +108,7 @@ void executeCommand(String command) {
                 int startIndex = 0;
                 int newlineIndex;
                 while ((newlineIndex = commandsBlock.indexOf('\n', startIndex)) != -1) {
-                    String cmd = commandsBlock.substring(startIndex, newlineIndex).trim();
+                    String cmd = commandsBlock.substring(startIndex , newlineIndex).trim();
                     if (cmd.length() > 0) {
                         executeCommand(cmd);
                     }
