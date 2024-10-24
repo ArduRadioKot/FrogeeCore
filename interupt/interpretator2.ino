@@ -21,15 +21,25 @@ void setup() {
         return;
     }
 
+}
+
+void loop() {
+    // Ваш основной код
+    File file = SD.open("/commands.txt", FILE_READ);
+    if (!file) {
+        Serial.println("Не удалось открыть файл");
+        return;
+    }
+
+    // Читаем команды из файла и выполняем их
     while (file.available()) {
         String command = file.readStringUntil('\n');
         executeCommand(command);
     }
     file.close();
-}
 
-void loop() {
-    // Ваш основной код
+    // После выполнения всех команд, можно добавить небольшую задержку перед повторным чтением
+    delay(1000); // Задержка перед повторным чтением файла
 }
 
 void executeCommand(String command) {
