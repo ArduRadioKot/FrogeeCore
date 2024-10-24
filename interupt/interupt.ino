@@ -1,24 +1,8 @@
+#include <stdlib.h>
 
-// void executeCommand(String command) {
-//     command.trim(); // Удаляем пробелы
-//     if (command == "LED_ON") {
-//         digitalWrite(ledPin, HIGH);
-//         Serial.println("LED включен");
-//     } else if (command == "LED_OFF") {
-//         digitalWrite(ledPin, LOW);
-//         Serial.println("LED выключен");
-//     } else if (command.startsWith("DELAY_")) {
-//         int delayTime = command.substring(6).toInt();
-//         delay(delayTime);
-//         Serial.print("Задержка на ");
-//         Serial.print(delayTime);
-//         Serial.println(" мс");
-//     } else {
-//         Serial.println("Неизвестная команда: " + command);
-//     }
-// }
+#define MAX_VARIABLES   // Ограничение на количество переменных
 
-// Структура для хранения переменной с типом и значением
+// Структура для хранения переменной
 struct Variable {
   String name;
   String type;  // Тип переменной: "int", "float", "string"
@@ -29,10 +13,10 @@ struct Variable {
   String stringValue;
 };
 
-// Массив для хранения переменных (максимум 10 переменных)
+// Фиксированный массив для переменных
+Variable variables[MAX_VARIABLES];
+int varCount = 0;  // Количество переменных
 
-Variable variables[100];
-int varCount = 1;  // Количество переменных
 void setup() {
   Serial.begin(115200);
 }
@@ -47,7 +31,10 @@ void loop() {
     } 
     else if (command.indexOf('=') != -1) {
       handleAssignment(command);
-    } 
+    }
+    else if (command.startsWith("cast(") && command.endsWith(")")) {
+      handleCast(command);
+    }
     else {
       Serial.println("Unknown command");
     }
@@ -96,6 +83,11 @@ void handleAssignment(String command) {
     String varName = command.substring(0, equalPos);
     varName.trim();
 
+    if (isNumeric(varName)) {
+      Serial.println("Error: Variable name cannot be a number.");
+      return;
+    }
+
     String valueString = command.substring(equalPos + 1);
     valueString.trim();
 
@@ -118,87 +110,143 @@ void handleAssignment(String command) {
   }
 }
 
+// Функция для обработки cast
+void handleCast(String command) {
+  int commaIndex = command.indexOf(',');
+  if (commaIndex != -1) {
+    String type = command.substring(5, commaIndex);
+    String value = command.substring(commaIndex + 1, command.length() - 1);
+    type.trim();
+    value.trim();
+
+    if (type == "int") {
+      int intValue = value.toInt();  // Преобразование в int
+      Serial.println(intValue);
+    } else if (type == "float") {
+      float floatValue = value.toFloat();  // Преобразование в float
+      Serial.println(floatValue);
+    } else if (type == "string") {
+      Serial.println(value);  // Преобразование в строку
+    } else {
+      Serial.println("Unknown type for cast");
+    }
+  } else {
+    Serial.println("Syntax error in cast");
+  }
+}
+
 // Установка переменной (int)
 void setVariable(String name, int value) {
-  for (int i = 0; i < varCount; i++) {
-    if (variables[i].name == name) {
-      variables[i].intValue = value;
-      variables[i].type = "int";
-      Serial.print("Updated ");
-      Serial.print(name);
-      Serial.print(" = ");
-      Serial.println(value);
-      return;
-    }
-  }
-
-  if (varCount <= varCount) {
-    variables[varCount].name = name;
-    variables[varCount].intValue = value;
-    variables[varCount].type = "int";
-    varCount++;
-    Serial.print("Assigned ");
+  int index = findVariable(name);
+  
+  if (index != -1) {
+    // Переменная уже существует, обновляем
+    variables[index].intValue = value;
+    variables[index].type = "int";
+    Serial.print("Updated ");
     Serial.print(name);
     Serial.print(" = ");
     Serial.println(value);
   } else {
-    Serial.println("Variable limit reached");
+    // Проверка на ограничение переменных
+    if (varCount >= MAX_VARIABLES) {
+      Serial.println("Error: Variable limit reached.");
+      return;
+    }
+
+    // Переменная новая, добавляем
+    addVariable(name, "int");
+    variables[varCount - 1].intValue = value;
+    Serial.print("Assigned ");
+    Serial.print(name);
+    Serial.print(" = ");
+    Serial.println(value);
   }
 }
 
 // Установка переменной (float)
 void setVariable(String name, float value) {
-  for (int i = 0; i < varCount; i++) {
-    if (variables[i].name == name) {
-      variables[i].floatValue = value;
-      variables[i].type = "float";
-      Serial.print("Updated ");
-      Serial.print(name);
-      Serial.print(" = ");
-      Serial.println(value);
-      return;
-    }
-  }
-
-  if (varCount <= varCount) {
-    variables[varCount].name = name;
-    variables[varCount].floatValue = value;
-    variables[varCount].type = "float";
-    varCount++;
-    Serial.print("Assigned ");
+  int index = findVariable(name);
+  
+  if (index != -1) {
+    // Переменная уже существует, обновляем
+    variables[index].floatValue = value;
+    variables[index].type = "float";
+    Serial.print("Updated ");
     Serial.print(name);
     Serial.print(" = ");
     Serial.println(value);
   } else {
-    Serial.println("Variable limit reached");
+    // Проверка на ограничение переменных
+    if (varCount >= MAX_VARIABLES) {
+      Serial.println("Error: Variable limit reached.");
+      return;
+    }
+
+    // Переменная новая, добавляем
+    addVariable(name, "float");
+    variables[varCount - 1].floatValue = value;
+    Serial.print("Assigned ");
+    Serial.print(name);
+    Serial.print(" = ");
+    Serial.println(value);
   }
 }
 
 // Установка переменной (string)
 void setVariable(String name, String value) {
-  for (int i = 0; i < varCount; i++) {
-    if (variables[i].name == name) {
-      variables[i].stringValue = value;
-      variables[i].type = "string";
-      Serial.print("Updated ");
-      Serial.print(name);
-      Serial.print(" = ");
-      Serial.println(value);
-      return;
-    }
-  }
-
-  if (varCount <= varCount) {
-    variables[varCount].name = name;
-    variables[varCount].stringValue = value;
-    variables[varCount].type = "string";
-    varCount++;
-    Serial.print("Assigned ");
+  int index = findVariable(name);
+  
+  if (index != -1) {
+    // Переменная уже существует, обновляем
+    variables[index].stringValue = value;
+    variables[index].type = "string";
+    Serial.print("Updated ");
     Serial.print(name);
     Serial.print(" = ");
     Serial.println(value);
   } else {
-    Serial.println("Variable limit reached");
+    // Проверка на ограничение переменных
+    if (varCount >= MAX_VARIABLES) {
+      Serial.println("Error: Variable limit reached.");
+      return;
+    }
+
+    // Переменная новая, добавляем
+    addVariable(name, "string");
+    variables[varCount - 1].stringValue = value;
+    Serial.print("Assigned ");
+    Serial.print(name);
+    Serial.print(" = ");
+    Serial.println(value);
   }
 }
 
+// Функция для поиска переменной по имени
+int findVariable(String name) {
+  for (int i = 0; i < varCount; i++) {
+    if (variables[i].name == name) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// Функция для добавления новой переменной
+void addVariable(String name, String type) {
+  if (varCount < MAX_VARIABLES) {
+    variables[varCount].name = name;
+    variables[varCount].type = type;
+    varCount++;
+  }
+}
+
+// Проверка, что строка является числом
+bool isNumeric(String str) {
+  for (int i = 0; i < str.length(); i++) {
+    if (isDigit(str.charAt(i)) == 0) {
+      return false;
+    }
+  }
+  return true;
+}
