@@ -1,5 +1,6 @@
 #include <stdlib.h>
-
+#include <Arduino.h>
+#include <math.h>
 #define MAX_VARIABLES 10  // Ограничение на количество переменных
 #define MAX_COMMANDS 20   // Максимальное количество команд
 
@@ -12,6 +13,7 @@ struct Variable {
     float floatValue;
   };
   String stringValue;
+  bool isFloat;
 };
 
 // Массив доступных пинов
@@ -40,6 +42,7 @@ void printVariable(String varName);  // Добавлен прототип фун
 bool isNumeric(String str);
 void registerCommand(String name, void (*handler)(String args));
 void processCommand(String input);
+void calculate(String func);
 
 void setup() {
   Serial.begin(115200);
@@ -56,6 +59,7 @@ void loop() {
     command.trim();
     processCommand(command);
     handlePinCommand(command);
+    calculate(command);
   }
 }
 
@@ -78,7 +82,7 @@ void processCommand(String input) {
   } else if (input.indexOf('=') != -1) {
     handleAssignment(input);  // Обработка присвоения переменной
   } else {
-    Serial.println("Syntax error");
+    //Serial.println("Syntax error");
   }
 }
 
@@ -93,8 +97,8 @@ void registerCommand(String name, void (*handler)(String args)) {
 
 // Обработка команды print.serial
 void handlePrintSerial(String args) {
-  int startIndex = args.indexOf('"');
-  int endIndex = args.lastIndexOf('"');
+  int startIndex = args.indexOf('(');
+  int endIndex = args.lastIndexOf(')');
   
   if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
     // Если аргумент является строкой
@@ -152,7 +156,7 @@ void handleAssignment(String command) {
       setVariable(varName, intValue);
     }
   } else {
-    Serial.println("Syntax error in assignment");
+    //Serial.println("Syntax error in assignment");
   }
 }
 
@@ -256,7 +260,8 @@ void setVariable(String name, String value) {
   }
 }
 
-// Функция для поиска переменной по имени
+
+// Поиск переменной по имени
 int findVariable(String name) {
   for (int i = 0; i < varCount; i++) {
     if (variables[i].name == name) {
@@ -332,6 +337,85 @@ bool isNumeric(String str) {
     }
   }
 }*/
+bool parseOperand(String operandStr, float &value) {
+  int index = findVariable(operandStr);
+  if (index != -1) {
+    if (variables[index].isFloat) {
+      value = variables[index].floatValue;
+    } else {
+      value = (float)variables[index].intValue;
+    }
+    return true;
+  } else if (operandStr.indexOf('.') != -1) {
+    value = operandStr.toFloat();
+    return true;
+  } else {
+    value = (float)operandStr.toInt();
+    return true;
+  }
+}
+
+
+
+void calculate(String func) {
+  int first_space = func.indexOf(' ');
+  int second_space = func.indexOf(' ', first_space + 1);
+
+  if (first_space != -1 && second_space != -1) {
+    String operand_1Str = func.substring(0, first_space);
+    String command = func.substring(first_space + 1, second_space);
+    String operand_2Str = func.substring(second_space + 1);
+
+    float operand_1 = 0;
+    float operand_2 = 0;
+
+    // Преобразуем операнды
+    if (!parseOperand(operand_1Str, operand_1) || !parseOperand(operand_2Str, operand_2)) {
+      Serial.println("Error: Invalid operand.");
+      return;
+    }
+
+    // Выполнение арифметической операции
+    float result = 0;
+    if (command == "+") {
+      result = operand_1 + operand_2;
+    } else if (command == "-") {
+      result = operand_1 - operand_2;
+    } else if (command == "*") {
+      result = operand_1 * operand_2;
+    } else if (command == "/") {
+      if (operand_2 != 0) {
+        result = operand_1 / operand_2;
+      } else {
+        Serial.println("Error: Division by zero.");
+        return;
+      }
+    } else if (command == "^") {
+      result = pow(operand_1, operand_2);
+    } else if (command == "%") {
+      if ((int)operand_2 != 0) {
+        result = fmod(operand_1, operand_2);
+      } else {
+        Serial.println("Error: Division by zero in modulo.");
+        return;
+      }
+    } else {
+      //Serial.println("Error: Unknown operation.");
+      return;
+    }
+
+    // Выводим результат с проверкой на тип (целое или дробное)
+    Serial.print("Result: ");
+    if (result == (int)result) {
+      Serial.println((int)result);
+    } else {
+      Serial.println(result, 4);  // 4 знака после запятой для вещественных чисел
+    }
+  } else {
+    //Serial.println("Syntax error in calculate command.");
+  }
+}
+
 
 // Функция для работы с пинами по номерам (без массива)
 void handlePinCommand(String input) {
@@ -392,7 +476,7 @@ void handlePinCommand(String input) {
       Serial.println("Unknown command.");
     }
   } else {
-    Serial.println("Syntax error in command.");
+    //Serial.println("Syntax error in command.");
   }
 }
 
