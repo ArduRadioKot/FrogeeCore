@@ -49,7 +49,6 @@ void setup() {
 
   // Регистрация команд
   registerCommand("print.serial", handlePrintSerial);
-  registerCommand("cast", handleCast);
   //registerCommand("c", calcCommand);
   
 }
@@ -77,12 +76,15 @@ void registerCommand(String name, void (*handler)(String args)) {
 // Функция для обработки команд
 void processCommand(String input) {
   int parenPos = input.indexOf('(');
-  
-  if (parenPos != -1) {
+
+  // Проверка на присвоение переменной с использованием "c(...)"
+  if (input.indexOf('=') != -1 && input.indexOf("c(") != -1) {
+    handleAssignment(input);  // Обработка присвоения с выражением "c(...)"
+  } else if (parenPos != -1) {
     String cmdName = input.substring(0, parenPos);
     cmdName.trim();
     String args = input.substring(parenPos + 1, input.length() - 1);  // Извлекаем аргументы
-    
+
     for (int i = 0; i < cmdCount; i++) {
       if (commands[i].name == cmdName) {
         commands[i].handler(args);  // Вызываем обработчик команды
@@ -91,9 +93,9 @@ void processCommand(String input) {
     }
     Serial.println("Unknown command: " + cmdName);
   } else if (input.indexOf('=') != -1) {
-    handleAssignment(input);  // Обработка присвоения переменной
+    handleAssignment(input);  // Обработка обычного присвоения переменной
   } else {
-    //Serial.println("Syntax error");
+    Serial.println("Unknown command: " + input);
   }
 }
 
@@ -180,7 +182,18 @@ void handleAssignment(String command) {
     valueString.trim();
 
     // Определение типа значения (int, float или строка)
-    if (valueString.indexOf('"') != -1) {
+    if(valueString.indexOf('c(') != -1){
+      float result = calcCommand(command);  // Получаем результат выражения c(...)
+    
+    // Отображаем результат
+    if (result == (int)result) {
+      int intValue = (int)result;
+      setVariable(varName, intValue);
+    } else {
+      float floatValue = ((float)result, 4);
+      setVariable(varName, floatValue);
+    }
+    }else if (valueString.indexOf('"') != -1) {
       String stringValue = valueString.substring(1, valueString.length() - 1);
       setVariable(varName, stringValue);
     } else if (valueString.indexOf('.') != -1) {
@@ -195,30 +208,6 @@ void handleAssignment(String command) {
   }
 }
 
-// Обработка команды cast
-void handleCast(String args) {
-  int commaIndex = args.indexOf(',');
-  if (commaIndex != -1) {
-    String type = args.substring(0, commaIndex);
-    String value = args.substring(commaIndex + 1);
-    type.trim();
-    value.trim();
-
-    if (type == "int") {
-      int intValue = value.toInt();
-      Serial.println(intValue);
-    } else if (type == "float") {
-      float floatValue = value.toFloat();
-      Serial.println(floatValue);
-    } else if (type == "string") {
-      Serial.println(value);
-    } else {
-      Serial.println("Unknown type for cast");
-    }
-  } else {
-    Serial.println("Syntax error in cast");
-  }
-}
 
 // Установка переменной (int)
 void setVariable(String name, int value) {
@@ -326,52 +315,7 @@ bool isNumeric(String str) {
 }
 
 
-// Функция для работы с пинами
-/*void handlePinCommand(String input) {
-  // Проверка на запись пина (writePin.номер.состояние)
-  if (input.startsWith("writePin.")) {
-    int dotPos = input.indexOf('.', 9);  // Поиск второй точки
-    if (dotPos != -1) {
-      // Извлечение номера пина и состояния
-      String pinNumberStr = input.substring(9, dotPos);
-      String pinStateStr = input.substring(dotPos + 1);
-      
-      int pinNumber = pinNumberStr.toInt();
-      int pinState = pinStateStr.toInt();
-      
-      // Проверка допустимости номера пина и состояния
-      if (pinNumber >= 0 && (pinState == HIGH || pinState == LOW)) {
-        pinMode(pinNumber, OUTPUT);
-        digitalWrite(pinNumber, pinState);
-        Serial.print("Pin ");
-        Serial.print(pinNumber);
-        Serial.print(" set to ");
-        Serial.println(pinState == HIGH ? "HIGH" : "LOW");
-      } else {
-        Serial.println("Invalid pin number or state.");
-      }
-    } else {
-      Serial.println("Syntax error in writePin command.");
-    }
-  }
-  
-  // Проверка на чтение пина (readPin.номер)
-  else if (input.startsWith("readPin.")) {
-    String pinNumberStr = input.substring(8);
-    int pinNumber = pinNumberStr.toInt();
-    
-    if (pinNumber >= 0) {
-      pinMode(pinNumber, INPUT);
-      int pinValue = digitalRead(pinNumber);
-      Serial.print("Pin ");
-      Serial.print(pinNumber);
-      Serial.print(" is ");
-      Serial.println(pinValue == HIGH ? "HIGH" : "LOW");
-    } else {
-      Serial.println("Invalid pin number.");
-    }
-  }
-}*/
+
 bool parseOperand(String operandStr, float &value) {
   int index = findVariable(operandStr);
   if (index != -1) {
@@ -437,69 +381,19 @@ float calculate(String func) {
 }
 
 
+void pinInclude(String command){
 
-// Функция для работы с пинами по номерам (без массива)
-/*void handlePinCommand(String input) {
-  //Serial.print("Received command: ");
-  //Serial.println(input);
-
-  // Разделим строку на части по точкам
-  int firstDot = input.indexOf('.');
-  int secondDot = input.indexOf('.', firstDot + 1);
-
-  // Проверим, что команда имеет правильный формат с двумя точками
-  if (firstDot != -1 && secondDot != -1) {
-    // Извлекаем команду (writePin или readPin)
-    String command = input.substring(0, firstDot);
-    // Извлекаем номер пина
-    String pinNumberStr = input.substring(firstDot + 1, secondDot);
-    // Извлекаем состояние пина (только для writePin)
-    String pinStateStr = input.substring(secondDot + 1);
-
-    int pinNumber = pinNumberStr.toInt();  // Преобразуем номер пина в число
-
-    // Если это команда для записи на пин
-    if (command == "writePin") {
-      Serial.println("Detected writePin command.");
-
-      int pinState = (pinStateStr == "HIGH") ? HIGH : (pinStateStr == "LOW") ? LOW : -1;
-
-      if (pinNumber >= 0 && (pinState == HIGH || pinState == LOW)) {
-        Serial.print("Setting pin ");
-        Serial.print(pinNumber);
-        Serial.print(" to state ");
-        Serial.println(pinState == HIGH ? "HIGH" : "LOW");
-
-        pinMode(pinNumber, OUTPUT);
-        digitalWrite(pinNumber, pinState);
-      } else {
-        Serial.println("Invalid pin number or state.");
-      }
-    }
-    // Если это команда для чтения с пина
-    else if (command == "readPin") {
-      Serial.println("Detected readPin command.");
-
-      if (pinNumber >= 0) {
-        pinMode(pinNumber, INPUT);
-        int pinValue = digitalRead(pinNumber);
-
-        Serial.print("Pin ");
-        Serial.print(pinNumber);
-        Serial.print(" is ");
-        Serial.println(pinValue == HIGH ? "HIGH" : "LOW");
-      } else {
-        Serial.println("Invalid pin number.");
-      }
-    }
-    // Если команда не распознана
-    else {
-      Serial.println("Unknown command.");
-    }
-  } else {
-    //Serial.println("Syntax error in command.");
+  int firstDot = command.indexOf('.');
+  int secondDot = command.indexOf('.', firstDot);
+  if(firstDot != -1 && secondDot != -1){
+    String pinmode = command.substring(0, firstDot);
+    String pin = command.substring(firstDot + 1, secondDot);
+    String mode = command.substring(secondDot + 1);
   }
-}*/
+}
+
+
+
 
 
 
