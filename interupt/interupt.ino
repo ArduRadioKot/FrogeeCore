@@ -44,12 +44,13 @@ void registerCommand(String name, void (*handler)(String args));
 void processCommand(String input);
 float calculate(String func);
 float calcCommand(String expression);
+void pinInclude(String command);
 void setup() {
   Serial.begin(115200);
 
   // Регистрация команд
   registerCommand("print.serial", handlePrintSerial);
-  //registerCommand("c", calcCommand);
+  registerCommand("pinMode", pinInclude);
   
 }
 
@@ -58,7 +59,7 @@ void loop() {
     String command = Serial.readStringUntil('\n');
     command.trim();
     processCommand(command);
-    //handlePinCommand(command);
+    pinInclude(command);
     calcCommand(command);
   }
 }
@@ -382,15 +383,24 @@ float calculate(String func) {
 
 
 void pinInclude(String command){
+  command.trim();
+  int dot = command.indexOf('.');
 
-  int firstDot = command.indexOf('.');
-  int secondDot = command.indexOf('.', firstDot);
-  if(firstDot != -1 && secondDot != -1){
-    String pinmode = command.substring(0, firstDot);
-    String pin = command.substring(firstDot + 1, secondDot);
-    String mode = command.substring(secondDot + 1);
+  if(dot != -1){
+    String pinStr = command.substring(0, dot);
+    String mode = command.substring(dot + 1);
+
+    int pin = pinStr.toInt();
+    if (mode == "In"){
+      pinMode(pin, INPUT);
+    }else if (mode == "Out"){
+      pinMode(pin, OUTPUT);
+    }else{
+      Serial.print ("Syntax error" + mode);
+    }
   }
 }
+
 
 
 
