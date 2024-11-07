@@ -2,13 +2,19 @@
 ## Для вывода текста в терминал используется комманда ```printlnSerial()``` и ```printSerial```
 
 ```swift
-printSerial(123)
-printlnSerial("Hello, World!")
+print.Serial(123)
+print.lnSerial("Hello, World!")
 ```
-## Для вывода картинки на дисплей используются комманды ```displayText```, ```displayRect```, ```displayClear```, ```displayPixel```
+## Для вывода картинки на дисплей используются комманды ```displayText```, ```displayRect```, ```displayClear```, ```displayPixel```, ```dispaly```
 ```swift
-displayText("text", x, y)
-displayRect(x, y, width, height)
+print.displayText("text", x, y)
+print.displayRect(x, y, width, height)
 displayClear()
-displayPixel(x, y)
+print.displayPixel(x, y)
+print.display(varible, x, y) 
+```
+## управление пинами
+```swift
+pin.read(an, 2)
+pin.write(dg, 3, HIGH)
 ```
