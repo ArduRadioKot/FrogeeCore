@@ -1,17 +1,22 @@
 #include <U8g2lib.h>
+#define Val_Int 10
 
 // Инициализация дисплея с U8g2
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE);
 
+int int_val[Val_Int];
+String intVal_name[Val_Int];
+int varCount = 0;  
+
 void setup() {
   Serial.begin(115200);
-  u8g2.begin(); // Инициализация дисплея
-  u8g2.clearDisplay(); // Очистка дисплея при старте
+  u8g2.begin();
+  u8g2.clearDisplay();
 }
 
 void loop() {
   if (Serial.available()) {
-    String command = Serial.readStringUntil('\n'); // Читаем до конца строки для уменьшения задержек
+    String command = Serial.readStringUntil('\n'); 
     parser(command);
   }
 }
@@ -21,26 +26,42 @@ bool isNumber(const String &str) {
 }
 
 void parser(const String &args) {
-  int startParams = args.indexOf('(');
-  int endParams = args.lastIndexOf(')');
-  if (startParams == -1 || endParams == -1) return; // Проверка на корректный формат команды
+  if (args.indexOf('.') != -1) {
+    int dot = args.indexOf('.');
+    int startParams = args.indexOf('(');
+    int endParams = args.lastIndexOf(')');
 
-  String command = args.substring(0, startParams);
-  String param = args.substring(startParams + 1, endParams);
-  
-  if (command == "printSerial") {
-    printSerial(param);
-  } else if (command == "printlnSerial") {
-    printlnSerial(param);
-  } else if (command == "displayText") {
-    displayText(param);
-  } else if (command == "displayRect") {
-    displayRect(param);
-  } else if (command == "displayClear") {
+    String command_1 = args.substring(0, dot);
+    String command_2 = args.substring(dot + 1, startParams);
+    String params = args.substring(startParams + 1, endParams);
+
+    if (command_1 == "print") {
+      if (command_2 == "Serial") {
+        printSerial(params);
+      } else if (command_2 == "lnSerial") {
+        printlnSerial(params);
+      } else if (command_2 == "displayText") {
+        displayText(params);
+      } else if (command_2 == "displayRect") {
+        displayRect(params);
+      } else if (command_2 == "displayPixel") {
+        displayPixel(params);
+      } else {
+        Serial.println("Error: command not found");
+      }
+    } else if (command_1 == "pin") {
+      // Placeholder for future pin handling
+    } else {
+      Serial.println("Error: command not found");
+    }
+  } else if (args.substring(0, args.indexOf('(')) == "displayClear") {
     displayClear();
-  } else if(command == "displayPixel"){
-    displayPixel(param);
-  }else{
+  } else if (args.indexOf(' = ') != -1) {
+    int equal = args.indexOf('=');
+    String name = args.substring(0, equal);
+    String value = args.substring(equal + 2);
+    var_Set(name, value);
+  } else {
     Serial.println("Error: command not found");
   }
 }
@@ -70,7 +91,6 @@ void printlnSerial(const String &params) {
 float calculate(const String &params) {
   int firstSpace = params.indexOf(' ');
   int secondSpace = params.indexOf(' ', firstSpace + 1);
-  //if (firstSpace == -1 || secondSpace == -1) return 0;
 
   String firstParamStr = params.substring(0, firstSpace);
   String operand = params.substring(firstSpace + 1, secondSpace);
@@ -79,32 +99,31 @@ float calculate(const String &params) {
   if (isNumber(firstParamStr) && isNumber(secondParamStr)) {
     float firstParam = firstParamStr.toFloat();
     float secondParam = secondParamStr.toFloat();
+
     if (operand == "+") return firstParam + secondParam;
     if (operand == "-") return firstParam - secondParam;
     if (operand == "*") return firstParam * secondParam;
     if (operand == "/") return secondParam != 0 ? firstParam / secondParam : 0;
   }
-  //return 0;
 }
 
-// Отображение текста на OLED
 void displayText(const String &params) {
   int startQuo = params.indexOf('"');
   int endQuo = params.indexOf('"', startQuo + 1);
   int firstDot = params.indexOf(',', endQuo + 1);
   int secondDot = params.indexOf(',', firstDot + 1);
+
   if (startQuo == -1 || endQuo == -1 || startQuo >= endQuo) return;
+
   int x = params.substring(firstDot + 2, secondDot).toInt();
   int y = params.substring(secondDot + 2).toInt();
-  
-
   String text = params.substring(startQuo + 1, endQuo);
-  u8g2.setFont(u8g2_font_ncenB08_tr); // Устанавливаем читаемый шрифт
-  u8g2.drawStr(x, y, text.c_str()); // Отображаем текст по координатам (0,12)
-  u8g2.sendBuffer(); // Отправка буфера на дисплей
+
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(x, y, text.c_str()); 
+  u8g2.sendBuffer();
 }
 
-// Рисование прямоугольника на OLED
 void displayRect(const String &params) {
   int comma1 = params.indexOf(',');
   int comma2 = params.indexOf(',', comma1 + 1);
@@ -117,25 +136,46 @@ void displayRect(const String &params) {
   int width = params.substring(comma2 + 2, comma3).toInt();
   int height = params.substring(comma3 + 2).toInt();
 
-  u8g2.drawBox(x, y, width, height); // Рисуем прямоугольник с заданными размерами
-  u8g2.sendBuffer(); // Обновляем дисплей
+  u8g2.drawBox(x, y, width, height); 
+  u8g2.sendBuffer(); 
 }
 
-void displayClear(){
-
-  //u8g2.clear();
+void displayClear() {
   u8g2.clearDisplay();
   u8g2.sendBuffer();
-
 }
 
-void displayPixel(const String &params){
-
-  int Dot = params.indexOf(',');
-  int x = params.substring(0, Dot).toInt();
-  int y = params.substring(Dot + 2).toInt();
+void displayPixel(const String &params) {
+  int dot = params.indexOf(',');
+  int x = params.substring(0, dot).toInt();
+  int y = params.substring(dot + 2).toInt();
 
   u8g2.drawPixel(x, y);
-  u8g2.sendBuffer(); // Обновляем дисплей
+  u8g2.sendBuffer();
+}
+
+void var_Set(const String &name, const String &value) {
+  int value_int = value.toInt();
+
+  if (find_Var(name) == -1) {
+    int_val[varCount] = value_int;
+    intVal_name[varCount] = name;
+    varCount++;
+  } else {
+    int varLoca = find_Var(name);
+    int_val[varLoca] = value_int;
+  }
+}
+
+int find_Var(const String &name) {
+  for (int i = 0; i <= Val_Int; i++) {
+    if (intVal_name[i] == name) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void pinInit(const String &params) {
 
 }
