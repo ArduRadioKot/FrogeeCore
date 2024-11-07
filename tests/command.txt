@@ -1,0 +1,6 @@
+IF(TRUE) {
+    LED_ON
+    DELAY_500
+    LED_OFF
+    DELAY_500
+}
