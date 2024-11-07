@@ -50,7 +50,13 @@ void parser(const String &args) {
         Serial.println("Error: command not found");
       }
     } else if (command_1 == "pin") {
-      // Placeholder for future pin handling
+      if(command_2 == "read"){
+        pinRead(params);
+      }else if(command_2 == "write"){
+        pinWrite(params);
+      }else if(command_2 == "init"){
+        pinInit(params);
+      }
     } else {
       Serial.println("Error: command not found");
     }
@@ -168,7 +174,7 @@ void var_Set(const String &name, const String &value) {
 }
 
 int find_Var(const String &name) {
-  for (int i = 0; i <= Val_Int; i++) {
+  for (int i = 0; i < Val_Int; i++) {
     if (intVal_name[i] == name) {
       return i;
     }
@@ -177,5 +183,48 @@ int find_Var(const String &name) {
 }
 
 void pinInit(const String &params) {
+  int dot = params.indexOf(',');
+  String pinStr = params.substring(0, dot);
+  String mode = params.substring(dot + 2);
+  int pin = pinStr.toInt();
+  if(mode == "input"){
+    pinMode(pin, INPUT);
+  }else if(mode == "output"){
+    pinMode(pin, OUTPUT);
+  }
+  Serial.println("init " + String(pin));
+}
 
+void pinRead(const String &params){
+  int dot = params.indexOf(',');
+  String type = params.substring(0, dot);
+  String pinStr = params.substring(dot + 2);
+  int pin = pinStr.toInt();
+  
+  if(type == "an"){
+    int value = analogRead(pin);
+    Serial.println(value);
+  } else if(type == "dg"){
+    int value = digitalRead(pin);
+    Serial.println(value);
+  }
+}
+
+void pinWrite(const String &params){
+  int firstDot = params.indexOf(',');
+  int secondDot = params.indexOf(',', firstDot + 1);
+  
+  String type = params.substring(0, firstDot);
+  String pinStr = params.substring(firstDot + 2, secondDot);
+  String valueStr = params.substring(secondDot + 2);
+  
+  int pin = pinStr.toInt();
+  int value = valueStr.toInt();
+  
+  if(type == "an"){
+    analogWrite(pin, value);
+  } else if(type == "dg"){
+    digitalWrite(pin, value == 1 ? HIGH : LOW);
+    Serial.println(value);
+  }
 }
