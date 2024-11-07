@@ -1,35 +1,4 @@
-#include <FS.h> // Подключите библиотеку файловой системы
-#include <Arduino.h>
-
-const int ledPin = 2; // Пин для LED
-
-void setup() {
-    Serial.begin(115200);
-    pinMode(ledPin, OUTPUT);
-
-    if (!SPIFFS.begin()) {
-        Serial.println("Ошибка при инициализации SPIFFS");
-        return;
-    }
-
-    File file = SPIFFS.open("/commands.txt", "r");
-    if (!file) {
-        Serial.println("Не удалось открыть файл");
-        return;
-    }
-
-    while (file.available()) {
-        String command = file.readStringUntil('\n');
-        executeCommand(command);
-    }
-    file.close();
-}
-
-void loop() {
-    // Ваш основной код
-}
-
-void executeCommand(String command) {
+/*void executeCommand(String command) {
     command.trim(); // Удаляем пробелы
     if (command == "LED_ON") {
         digitalWrite(ledPin, HIGH);
@@ -75,42 +44,55 @@ void executeCommand(String command) {
         Serial.print(pin);
         Serial.print(" значение ");
         Serial.println(value);
-    } else if (command.startsWith("IF_")) {
-        String condition = command.substring(3);
-        int openParenIndex = condition.indexOf("(");
-        int closeParenIndex = condition.indexOf(")");
-
-        int openBraceIndex = condition.indexOf("{");
-        int closeBraceIndex = condition.indexOf("}");
-
-        if (openParenIndex != -1 && closeParenIndex != -1 &&
-            openBraceIndex != -1 && closeBraceIndex != -1 && 
-            closeBraceIndex > openBraceIndex) {
-            
-            String conditionValue = condition.substring(openParenIndex + 1, closeParenIndex).trim();
-            String commandsBlock = condition.substring(openBraceIndex + 1, closeBraceIndex).trim();
-            
-            if (conditionValue == "TRUE") {
-                // Разделяем команды по новой строке и выполняем каждую
-                int startIndex = 0;
-                int newlineIndex;
-                while ((newlineIndex = commandsBlock.indexOf('\n', startIndex)) != -1) {
-                    String cmd = commandsBlock.substring(startIndex, newlineIndex).trim();
-                    if (cmd.length() > 0) {
-                        executeCommand(cmd);
-                    }
-                    startIndex = newlineIndex + 1;
-                }
-                // Выполняем последнюю команду, если она есть
-                String lastCmd = commandsBlock.substring(startIndex).trim();
-                if (lastCmd.length() > 0) {
-                    executeCommand(lastCmd);
-                }
-            }
+    } else if (command.startsWith("PWM_")) {
+        int pin = command.substring(4, 5).toInt();
+        int value = command.substring(6).toInt();
+        ledcWrite(pin, value); // Используйте ledcWrite для ESP32
+        Serial.print("PWM на пине ");
+        Serial.print(pin);
+        Serial.print(" значение ");
+        Serial.println(value);
+    } else if (command.startsWith("MATH_ADD_")) {
+        int a = command.substring(9, command.indexOf('_', 9)).toInt();
+        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
+        Serial.print("Сумма ");
+        Serial.print(a);
+        Serial.print(" и ");
+        Serial.print(b);
+        Serial.print(" равна ");
+        Serial.println(a + b);
+    } else if (command.startsWith("MATH_SUB_")) {
+        int a = command.substring(9, command.indexOf('_', 9)).toInt();
+        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
+        Serial.print("Разность ");
+        Serial.print(a);
+        Serial.print(" и ");
+        Serial.print(b);
+        Serial.print(" равна ");
+        Serial.println(a - b);
+    } else if (command.startsWith("MATH_MUL_")) {
+        int a = command.substring(9, command.indexOf('_', 9)).toInt();
+        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
+        Serial.print("Произведение ");
+        Serial.print(a);
+        Serial.print(" и ");
+        Serial.print(b);
+        Serial.print(" равно ");
+        Serial.println(a * b);
+    } else if (command.startsWith("MATH_DIV_")) {
+        int a = command.substring(9, command.indexOf('_', 9)).toInt();
+        int b = command.substring(command.indexOf('_', 9) + 1).toInt();
+        if (b != 0) {
+            Serial.print("Частное ");
+            Serial.print(a);
+            Serial.print(" и ");
+            Serial.print(b);
+            Serial.print(" равно ");
+            Serial.println((float)a / b);
         } else {
-            Serial.println("Неправильный формат команды IF");
+            Serial.println("Ошибка: Деление на ноль");
         }
     } else {
         Serial.println("Неизвестная команда: " + command);
     }
-}
+}*/
