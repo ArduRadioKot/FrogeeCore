@@ -28,8 +28,8 @@ class textIde(ctk.CTk):
 
         self.text_area = tk.Text(self, font=("Consolas", 12))
         self.text_area.pack(fill="both", side=ctk.RIGHT, expand=True)
-        self.text_area.tag_config('keyword', foreground='#ad82e0')  # purple
-        self.text_area.tag_config('builtin', foreground='#3ea8e5')  # blue-violet
+        self.text_area.tag_config('keyword', foreground='#f250e7')  # purple
+        self.text_area.tag_config('builtin', foreground='#9950f2')  # blue-violet
         self.text_area.tag_config('string', foreground='#6a8759')  # green
         self.text_area.tag_config('comment', foreground='#546e56')  # dark green
         self.text_area.tag_config('unknown', foreground='#84adf0')  # blue-violet
