@@ -1,8 +1,71 @@
 #include <U8g2lib.h>
-#define Val_Int 10
+#include <iostream>
+#include <string>  
+#define Var_cnt 10
+int varCount = 0;
+struct Mem{
+String name;
+String type;
+String var;
+};
+
+Mem variable[Var_cnt];
+
+// Вспомогательные функции
+bool isNumber(const String &str) {
+    return str.length() > 0 && (str.toInt() != 0 || str == "0");
+}
+
+class Assign {
+public:
+    static void assign_var(const String &n_name, const String &n_type, const String &n_var){
+      if(varCount <= Var_cnt){
+        variable[varCount].name = n_name;
+        variable[varCount].type = n_type;
+        variable[varCount].var = n_var;
+        varCount++;
+      }
+    }
+    static void reWrite_var(const int &id, const String &n_var){
+      variable[id].var = n_var;
+    }
+    static int find_var(const String &name_var){
+      for(int i = 0; i <= Var_cnt; i++){
+        if(variable[i].name == name_var){
+          return i;
+        }
+      }
+      return -1;
+    }
+    static void tramit_var(const String &params){
+      int equal = params.indexOf('=');
+      String name = params.substring(0, equal);
+      String n_var = params.substring(equal + 1);
+      int firstQuo = params.indexOf('"');
+      int secondQuo = params.indexOf(firstQuo, '"');
+      if(find_var(n_var) != -1){
+        n_var = variable[find_var(n_var)].var;
+      }else if(find_var(name) != -1){
+        reWrite_var(find_var(name), n_var);
+      }else{
+        if((firstQuo != -1) && (secondQuo != -1)){
+          String type = "str";
+          assign_var(name, type, n_var);
+        }else if (isNumber(n_var)){
+          if(n_var.indexOf('.' == -1)){
+            String type = "int";
+            assign_var(name, type, n_var);
+          }else{
+            String type = "float";
+            assign_var(name, type, n_var);
+          }
+        }
+      }
+    }
+};
+
 
 // Класс DisplayManager
-
 class Display {
 public:
     static U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2;
@@ -15,11 +78,19 @@ public:
         int endQuo = params.indexOf('"', startQuo + 1);
         int firstDot = params.indexOf(',', endQuo + 1);
         int secondDot = params.indexOf(',', firstDot + 1);
-
+        int x = 0;
+        int y = 0;
         if (startQuo == -1 || endQuo == -1 || startQuo >= endQuo) return;
-
-        int x = params.substring(firstDot + 2, secondDot).toInt();
-        int y = params.substring(secondDot + 2).toInt();
+        if(Assign::find_var(params.substring(firstDot + 2, secondDot)) != -1){
+          x = variable[Assign::find_var(params.substring(firstDot + 2, secondDot))].var.toInt();
+        }else{
+          x = params.substring(firstDot + 2, secondDot).toInt();          
+        }
+        if(Assign::find_var(params.substring(secondDot + 2)) != -1){
+          y = variable[Assign::find_var(params.substring(secondDot + 2))].var.toInt();
+        }else{
+          y = params.substring(secondDot + 2).toInt();
+        }
         String text = params.substring(startQuo + 1, endQuo);
 
         u8g2.setFont(u8g2_font_ncenB08_tr);
@@ -31,11 +102,18 @@ public:
         int comma1 = params.indexOf(',');
         int comma2 = params.indexOf(',', comma1 + 1);
         int comma3 = params.indexOf(',', comma2 + 1);
-
+        int x, y;
         if (comma1 == -1 || comma2 == -1 || comma3 == -1) return;
-
-        int x = params.substring(0, comma1).toInt();
-        int y = params.substring(comma1 + 2, comma2).toInt();
+        if( Assign::find_var(params.substring(0, comma1)) != -1){
+          x = variable[Assign::find_var(params.substring(0, comma1))].var.toInt();
+        }else{
+          x = params.substring(0, comma1).toInt();          
+        }
+        if ( Assign::find_var(params.substring(comma1 + 2, comma2)) != -1){
+          y = variable[Assign::find_var(params.substring(comma1 + 2, comma2))].var.toInt();
+        }else{
+          y = params.substring(comma1 + 2, comma2).toInt();
+        }
         int width = params.substring(comma2 + 2, comma3).toInt();
         int height = params.substring(comma3 + 2).toInt();
 
@@ -123,6 +201,7 @@ public:
         String pinStr = params.substring(firstDot + 2, secondDot);
         String valueStr = params.substring(secondDot + 2);
 
+
         int pin = pinStr.toInt();
         int value = valueStr.toInt();
 
@@ -134,10 +213,7 @@ public:
     }
 };
 
-// Вспомогательные функции
-bool isNumber(const String &str) {
-    return str.length() > 0 && (str.toInt() != 0 || str == "0");
-}
+
 
 float calculate(const String &params) {
     int firstSpace = params.indexOf(' ');
@@ -162,7 +238,8 @@ float calculate(const String &params) {
 // Парсер
 class CommandParser {
 public:
-    void parse(const String &args) {
+    void parse(String args) {
+        args.trim();
         if (args.indexOf('.') != -1) {
             int dot = args.indexOf('.');
             int startParams = args.indexOf('(');
@@ -202,6 +279,8 @@ public:
                 } else {
                     Serial.println("Error: command not found");
                 }
+            }else if (command_1 == "assign") {
+                
             } else {
                 Serial.println("Error: command not found");
             }
