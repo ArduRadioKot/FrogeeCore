@@ -1,96 +1,110 @@
-#include <U8g2lib.h>
-#include <iostream>
-#include <string>  
-#define Var_cnt 10
-int varCount = 0;
-struct Mem{
-String name;
-String type;
-String var;
+#include <U8g2lib.h> // Библиотека для работы с OLED-дисплеем U8g2.
+#include <iostream>  // Стандартная библиотека ввода-вывода.
+#include <string>    // Библиотека для работы со строками.
+
+#define Var_cnt 10  // Максимальное количество переменных.
+int varCount = 0;   // Счетчик текущих переменных.
+
+struct Mem {
+    String name; // Имя переменной.
+    String type; // Тип переменной (например, "int", "str", "float").
+    String var;  // Значение переменной.
 };
 
-Mem variable[Var_cnt];
+Mem variable[Var_cnt]; // Массив для хранения переменных.
 
-// Вспомогательные функции
+// Функция проверки, является ли строка числом.
 bool isNumber(const String &str) {
     return str.length() > 0 && (str.toInt() != 0 || str == "0");
 }
 
+// Класс для работы с переменными.
 class Assign {
 public:
-    static void assign_var(const String &n_name, const String &n_type, const String &n_var){
-      if(varCount <= Var_cnt){
-        variable[varCount].name = n_name;
-        variable[varCount].type = n_type;
-        variable[varCount].var = n_var;
-        varCount++;
-      }
-    }
-    static void reWrite_var(const int &id, const String &n_var){
-      variable[id].var = n_var;
-    }
-    static int find_var(const String &name_var){
-      for(int i = 0; i <= Var_cnt; i++){
-        if(variable[i].name == name_var){
-          return i;
+    // Создает новую переменную.
+    static void assign_var(const String &n_name, const String &n_type, const String &n_var) {
+        if (varCount <= Var_cnt) {
+            variable[varCount].name = n_name;
+            variable[varCount].type = n_type;
+            variable[varCount].var = n_var;
+            varCount++;
         }
-      }
-      return -1;
     }
-    static void tramit_var(const String &params){
-      int equal = params.indexOf('=');
-      String name = params.substring(0, equal);
-      String n_var = params.substring(equal + 1);
-      int firstQuo = params.indexOf('"');
-      int secondQuo = params.indexOf(firstQuo, '"');
-      if(find_var(n_var) != -1){
-        n_var = variable[find_var(n_var)].var;
-      }else if(find_var(name) != -1){
-        reWrite_var(find_var(name), n_var);
-      }else{
-        if((firstQuo != -1) && (secondQuo != -1)){
-          String type = "str";
-          assign_var(name, type, n_var);
-        }else if (isNumber(n_var)){
-          if(n_var.indexOf('.' == -1)){
-            String type = "int";
-            assign_var(name, type, n_var);
-          }else{
-            String type = "float";
-            assign_var(name, type, n_var);
-          }
+
+    // Перезаписывает значение существующей переменной.
+    static void reWrite_var(const int &id, const String &n_var) {
+        variable[id].var = n_var;
+    }
+
+    // Находит индекс переменной по имени.
+    static int find_var(const String &name_var) {
+        for (int i = 0; i <= Var_cnt; i++) {
+            if (variable[i].name == name_var) {
+                return i;
+            }
         }
-      }
+        return -1;
+    }
+
+    // Обрабатывает строку с назначением переменной.
+    static void tramit_var(const String &params) {
+        int equal = params.indexOf('=');
+        String name = params.substring(0, equal);
+        String n_var = params.substring(equal + 1);
+        int firstQuo = params.indexOf('"');
+        int secondQuo = params.indexOf(firstQuo, '"');
+
+        if (find_var(n_var) != -1) { // Если n_var - другая переменная.
+            n_var = variable[find_var(n_var)].var;
+        } else if (find_var(name) != -1) { // Если переменная с таким именем уже существует.
+            reWrite_var(find_var(name), n_var);
+        } else {
+            // Создание новой переменной с определением типа.
+            if ((firstQuo != -1) && (secondQuo != -1)) {
+                assign_var(name, "str", n_var);
+            } else if (isNumber(n_var)) {
+                if (n_var.indexOf('.') == -1) {
+                    assign_var(name, "int", n_var);
+                } else {
+                    assign_var(name, "float", n_var);
+                }
+            }
+        }
     }
 };
 
-
-// Класс DisplayManager
+// Класс для работы с дисплеем.
 class Display {
 public:
-    static U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2;
+    static U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2; // Объект дисплея.
+
+    // Инициализация дисплея.
     static void begin() {
         u8g2.begin();
         u8g2.clearDisplay();
     }
+
+    // Отображение текста на дисплее.
     static void displayText(const String &params) {
         int startQuo = params.indexOf('"');
         int endQuo = params.indexOf('"', startQuo + 1);
         int firstDot = params.indexOf(',', endQuo + 1);
         int secondDot = params.indexOf(',', firstDot + 1);
-        int x = 0;
-        int y = 0;
+        int x = 0, y = 0;
+
+        // Извлечение текста и координат.
         if (startQuo == -1 || endQuo == -1 || startQuo >= endQuo) return;
-        if(Assign::find_var(params.substring(firstDot + 2, secondDot)) != -1){
-          x = variable[Assign::find_var(params.substring(firstDot + 2, secondDot))].var.toInt();
-        }else{
-          x = params.substring(firstDot + 2, secondDot).toInt();          
+        if (Assign::find_var(params.substring(firstDot + 2, secondDot)) != -1) {
+            x = variable[Assign::find_var(params.substring(firstDot + 2, secondDot))].var.toInt();
+        } else {
+            x = params.substring(firstDot + 2, secondDot).toInt();
         }
-        if(Assign::find_var(params.substring(secondDot + 2)) != -1){
-          y = variable[Assign::find_var(params.substring(secondDot + 2))].var.toInt();
-        }else{
-          y = params.substring(secondDot + 2).toInt();
+        if (Assign::find_var(params.substring(secondDot + 2)) != -1) {
+            y = variable[Assign::find_var(params.substring(secondDot + 2))].var.toInt();
+        } else {
+            y = params.substring(secondDot + 2).toInt();
         }
+
         String text = params.substring(startQuo + 1, endQuo);
         Serial.println(x, y);
         u8g2.setFont(u8g2_font_ncenB08_tr);
@@ -98,22 +112,25 @@ public:
         u8g2.sendBuffer();
     }
 
+    // Отображение прямоугольника на дисплее.
     static void displayRect(const String &params) {
         int comma1 = params.indexOf(',');
         int comma2 = params.indexOf(',', comma1 + 1);
         int comma3 = params.indexOf(',', comma2 + 1);
         int x, y;
+
         if (comma1 == -1 || comma2 == -1 || comma3 == -1) return;
-        if( Assign::find_var(params.substring(0, comma1)) != -1){
-          x = variable[Assign::find_var(params.substring(0, comma1))].var.toInt();
-        }else{
-          x = params.substring(0, comma1).toInt();          
+        if (Assign::find_var(params.substring(0, comma1)) != -1) {
+            x = variable[Assign::find_var(params.substring(0, comma1))].var.toInt();
+        } else {
+            x = params.substring(0, comma1).toInt();
         }
-        if ( Assign::find_var(params.substring(comma1 + 2, comma2)) != -1){
-          y = variable[Assign::find_var(params.substring(comma1 + 2, comma2))].var.toInt();
-        }else{
-          y = params.substring(comma1 + 2, comma2).toInt();
+        if (Assign::find_var(params.substring(comma1 + 2, comma2)) != -1) {
+            y = variable[Assign::find_var(params.substring(comma1 + 2, comma2))].var.toInt();
+        } else {
+            y = params.substring(comma1 + 2, comma2).toInt();
         }
+
         Serial.println(x, y);
         int width = params.substring(comma2 + 2, comma3).toInt();
         int height = params.substring(comma3 + 2).toInt();
@@ -122,6 +139,7 @@ public:
         u8g2.sendBuffer();
     }
 
+    // Отображение пикселя на дисплее.
     static void displayPixel(const String &params) {
         int dot = params.indexOf(',');
         int x = params.substring(0, dot).toInt();
@@ -131,44 +149,44 @@ public:
         u8g2.sendBuffer();
     }
 
+    // Очистка дисплея.
     static void displayClear() {
         u8g2.clearDisplay();
         u8g2.sendBuffer();
     }
-
 };
 
+// Класс для работы с последовательной печатью.
 class MyPrint {
 public:
-
-
+    // Печать текста без переноса строки.
     static void printSerial(const String &params) {
-        if(params.startsWith("\"") && params.endsWith("\"")) {
+        if (params.startsWith("\"") && params.endsWith("\"")) {
             Serial.print(params.substring(1, params.length() - 1));
         } else {
             Serial.print(params);
         }
     }
 
+    // Печать текста с переносом строки.
     static void printlnSerial(const String &params) {
-      if(Assign::find_var(params) != -1){
-          Serial.println(variable[Assign::find_var(params)].var);
-      }else if (params.startsWith("\"") && params.endsWith("\"")) {
+        if (Assign::find_var(params) != -1) {
+            Serial.println(variable[Assign::find_var(params)].var);
+        } else if (params.startsWith("\"") && params.endsWith("\"")) {
             Serial.println(params.substring(1, params.length() - 1));
         } else {
             Serial.println(params);
         }
     }
-
-    
 };
 
-// Инициализация дисплея
+// Инициализация дисплея.
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C Display::u8g2(U8G2_R0, SCL, SDA, U8X8_PIN_NONE);
 
-// Класс Pin
+// Класс для работы с пинами Arduino.
 class Pin {
 public:
+    // Инициализация пина (вход или выход).
     static void init(const String &params) {
         int dot = params.indexOf(',');
         String pinStr = params.substring(0, dot);
@@ -181,6 +199,7 @@ public:
         }
     }
 
+    // Чтение значения с пина.
     static void read(const String &params) {
         int dot = params.indexOf(',');
         String type = params.substring(0, dot);
@@ -196,6 +215,7 @@ public:
         }
     }
 
+    // Запись значения на пин.
     static void write(const String &params) {
         int firstDot = params.indexOf(',');
         int secondDot = params.indexOf(',', firstDot + 1);
@@ -203,7 +223,6 @@ public:
         String type = params.substring(0, firstDot);
         String pinStr = params.substring(firstDot + 2, secondDot);
         String valueStr = params.substring(secondDot + 2);
-
 
         int pin = pinStr.toInt();
         int value = valueStr.toInt();
@@ -216,8 +235,7 @@ public:
     }
 };
 
-
-
+// Функция вычисления простых математических операций.
 float calculate(const String &params) {
     int firstSpace = params.indexOf(' ');
     int secondSpace = params.indexOf(' ', firstSpace + 1);
@@ -238,58 +256,61 @@ float calculate(const String &params) {
     return 0;
 }
 
-// Парсер
+// Парсер команд.
 class CommandParser {
 public:
     void parse(String args) {
-            args.trim();
-            int startParams = args.indexOf('(');
-            int endParams = args.lastIndexOf(')');
-            String commands = args.substring(0, startParams);
-            String command_1, command_2;
-            if(commands.indexOf(".") != 1){
-              int dot = commands.indexOf('.');
-              command_1 = commands.substring(0, dot);
-              command_2 = commands.substring(dot + 1);
-            }else{
-              command_1 = commands;
-            }
+        args.trim();
+        int startParams = args.indexOf('(');
+        int endParams = args.lastIndexOf(')');
+        String commands = args.substring(0, startParams);
+        String command_1, command_2;
 
-            String params = args.substring(startParams + 1, endParams);
+        // Разделение команды на основные и подкоманды.
+        if (commands.indexOf(".") != 1) {
+            int dot = commands.indexOf('.');
+            command_1 = commands.substring(0, dot);
+            command_2 = commands.substring(dot + 1);
+        } else {
+            command_1 = commands;
+        }
 
-            if (command_1 == "print") {
-                if (command_2 == "Serial") {
-                    MyPrint::printSerial(params);
-                } else if (command_2 == "lnSerial") {
-                    MyPrint::printlnSerial(params);
-                }else if (command_2 == "print") {
-                    Display::displayText(params);
-                } else if (command_2 == "rect") {
-                    Display::displayRect(params);
-                } else if (command_2 == "pixel") {
-                    Display::displayPixel(params);
-                } else if (command_2 == "clear") {
-                    Display::displayClear();
-                } else {
-                    Serial.println("Error: command not found");
-                }
-            } else if (command_1 == "pin") {
-                if (command_2 == "read") {
-                    Pin::read(params);
-                } else if (command_2 == "write") {
-                    Pin::write(params);
-                } else if (command_2 == "init") {
-                    Pin::init(params);
-                } else {
-                    Serial.println("Error: command not found");
-                }
-            }else if (command_1 == "assign") {
-                Assign::tramit_var(params);
+        String params = args.substring(startParams + 1, endParams);
+
+        // Обработка команд.
+        if (command_1 == "print") {
+            if (command_2 == "Serial") {
+                MyPrint::printSerial(params);
+            } else if (command_2 == "lnSerial") {
+                MyPrint::printlnSerial(params);
+            } else if (command_2 == "print") {
+                Display::displayText(params);
+            } else if (command_2 == "rect") {
+                Display::displayRect(params);
+            } else if (command_2 == "pixel") {
+                Display::displayPixel(params);
+            } else if (command_2 == "clear") {
+                Display::displayClear();
             } else {
                 Serial.println("Error: command not found");
             }
+        } else if (command_1 == "pin") {
+            if (command_2 == "read") {
+                Pin::read(params);
+            } else if (command_2 == "write") {
+                Pin::write(params);
+            } else if (command_2 == "init") {
+                Pin::init(params);
+            } else {
+                Serial.println("Error: command not found");
+            }
+        } else if (command_1 == "assign") {
+            Assign::tramit_var(params);
+        } else {
+            Serial.println("Error: command not found");
+        }
     }
 };
 
-// Глобальные объекты
+// Глобальные объекты.
 CommandParser commandParser;
