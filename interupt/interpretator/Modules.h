@@ -92,7 +92,7 @@ public:
           y = params.substring(secondDot + 2).toInt();
         }
         String text = params.substring(startQuo + 1, endQuo);
-
+        Serial.println(x, y);
         u8g2.setFont(u8g2_font_ncenB08_tr);
         u8g2.drawStr(x, y, text.c_str());
         u8g2.sendBuffer();
@@ -114,6 +114,7 @@ public:
         }else{
           y = params.substring(comma1 + 2, comma2).toInt();
         }
+        Serial.println(x, y);
         int width = params.substring(comma2 + 2, comma3).toInt();
         int height = params.substring(comma3 + 2).toInt();
 
@@ -150,7 +151,9 @@ public:
     }
 
     static void printlnSerial(const String &params) {
-        if (params.startsWith("\"") && params.endsWith("\"")) {
+      if(Assign::find_var(params) != -1){
+          Serial.println(variable[Assign::find_var(params)].var);
+      }else if (params.startsWith("\"") && params.endsWith("\"")) {
             Serial.println(params.substring(1, params.length() - 1));
         } else {
             Serial.println(params);
@@ -239,14 +242,19 @@ float calculate(const String &params) {
 class CommandParser {
 public:
     void parse(String args) {
-        args.trim();
-        if (args.indexOf('.') != -1) {
-            int dot = args.indexOf('.');
+            args.trim();
             int startParams = args.indexOf('(');
             int endParams = args.lastIndexOf(')');
+            String commands = args.substring(0, startParams);
+            String command_1, command_2;
+            if(commands.indexOf(".") != 1){
+              int dot = commands.indexOf('.');
+              command_1 = commands.substring(0, dot);
+              command_2 = commands.substring(dot + 1);
+            }else{
+              command_1 = commands;
+            }
 
-            String command_1 = args.substring(0, dot);
-            String command_2 = args.substring(dot + 1, startParams);
             String params = args.substring(startParams + 1, endParams);
 
             if (command_1 == "print") {
@@ -254,11 +262,7 @@ public:
                     MyPrint::printSerial(params);
                 } else if (command_2 == "lnSerial") {
                     MyPrint::printlnSerial(params);
-                }else{
-                    Serial.println("Error: command not found");
-                }
-            } else if(command_1 == "display"){
-                if (command_2 == "print") {
+                }else if (command_2 == "print") {
                     Display::displayText(params);
                 } else if (command_2 == "rect") {
                     Display::displayRect(params);
@@ -280,13 +284,10 @@ public:
                     Serial.println("Error: command not found");
                 }
             }else if (command_1 == "assign") {
-                
+                Assign::tramit_var(params);
             } else {
                 Serial.println("Error: command not found");
             }
-        } else {
-            Serial.println("Error: command not found");
-        }
     }
 };
 
