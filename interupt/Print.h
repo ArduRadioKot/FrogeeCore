@@ -12,7 +12,7 @@ public:
         if (Assign::find_var(params) != -1) {
             Serial.print(variable[Assign::find_var(params)].var);
         } else if (params.startsWith("\"") && params.endsWith("\"")) {
-            Serial.print(params.substring(1, params.length() - 1));
+            Serial.print(params.substring(params.indexOf('"') + 1, params.length() - 1));
         } else {
             Serial.print(params);
         }
@@ -23,7 +23,7 @@ public:
         if (Assign::find_var(params) != -1) {
             Serial.println(variable[Assign::find_var(params)].var);
         } else if (params.startsWith("\"") && params.endsWith("\"")) {
-            Serial.println(params.substring(1, params.length() - 1));
+            Serial.println(params.substring(params.indexOf('"') + 1, params.length() - 1));
         } else {
             Serial.println(params);
         }

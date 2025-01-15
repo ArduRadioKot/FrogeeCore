@@ -7,7 +7,7 @@ public:
     static void init(const String &params) {
         int dot = params.indexOf(',');
         String pinStr = params.substring(0, dot);
-        String mode = params.substring(dot + 2);
+        String mode = params.substring(dot + 1);
         int pin = pinStr.toInt();
         if (mode == "input") {
             pinMode(pin, INPUT);
@@ -20,7 +20,7 @@ public:
     static void read(const String &params) {
         int dot = params.indexOf(',');
         String type = params.substring(0, dot);
-        String pinStr = params.substring(dot + 2);
+        String pinStr = params.substring(dot + 1);
         int pin = pinStr.toInt();
 
         if (type == "an") {
@@ -38,8 +38,8 @@ public:
         int secondDot = params.indexOf(',', firstDot + 1);
 
         String type = params.substring(0, firstDot);
-        String pinStr = params.substring(firstDot + 2, secondDot);
-        String valueStr = params.substring(secondDot + 2);
+        String pinStr = params.substring(firstDot + 1, secondDot);
+        String valueStr = params.substring(secondDot + 1);
 
         int pin = pinStr.toInt();
         int value = valueStr.toInt();
