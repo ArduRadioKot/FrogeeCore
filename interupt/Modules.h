@@ -31,10 +31,11 @@ public:
             } else if (command_2 == "lnSerial") {
                 MyPrint::printlnSerial(params);
             } else {
-                Serial.println("Error: command not found");
+                //Serial.println("Error: command not found");
             }
         //Pin.h
         } else if (command_1 == "pin") {
+          params = Aux::trim_space(params);
             if (command_2 == "read") {
                 Pin::read(params);
             } else if (command_2 == "write") {
@@ -42,16 +43,18 @@ public:
             } else if (command_2 == "init") {
                 Pin::init(params);
             } else {
-                Serial.println("Error: command not found");
+                //Serial.println("Error: command not found");
             }
         //Assign.h
         } else if (command_1 == "assign") {
+          params = Aux::trim_space(params);
             Assign::tramit_var(params);
         //Del.h
         } else if (command_1 == "delay"){
+          params = Aux::trim_space(params);
             del.Delay(params); 
         } else {
-          Serial.println("Error: command not found");
+          //Serial.println("Error: command not found");
         }
     }
 };
