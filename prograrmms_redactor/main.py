@@ -31,17 +31,17 @@ class textIde(ctk.CTk):
         self.text_area.tag_config('keyword', foreground='#f250e7')  # purple
         self.text_area.tag_config('builtin', foreground='#9950f2')  # blue-violet
         self.text_area.tag_config('string', foreground='#6a8759')  # green
-        self.text_area.tag_config('comment', foreground='#546e56')  # dark green
+        self.text_area.tag_config('comment', foreground='#8d9ba6')  # dark green
         self.text_area.tag_config('unknown', foreground='#84adf0')  # blue-violet
         self.text_area.tag_config('class', foreground='#48b083')  # green-blue
-        self.text_area.tag_config('clas', foreground='#477ad1')  # green-blue
+        self.text_area.tag_config('clas', foreground='#50adfa')  # green-blue
         self.text_area.tag_config('def_func', foreground='#dee86d')  # light green
 
-        self.keywords = ['if', 'else', 'for', 'while', 'import']
-        self.builtins = ['self', 'print', 'len', 'range', 'list', 'dict', 'set', 'int', 'float', 'str', 'bool']
+        self.keywords = ['if', 'else', 'for', 'while', 'import', '#define', 'class', 'function', 'func', 'return', '++', '+', '>', '<', '=', '@obj', 'case']
+        self.builtins = ['self', 'print', 'len', 'range', 'list', 'dict', 'set', 'int', 'float', 'str', 'bool', 'var', 'let']
         self.strings = ['"', "'", '"""', "'''"]
-        self.comments = ['#']
-        self.clas = ['class', 'function', 'func']
+        self.comments = ['// ']
+        self.clas = ['class', 'function', 'func', 'return', '++', '+', '>', '<', '=', '@obj', 'case']
 
         # self.text_area.bind("<KeyRelease>", self.auto_brace)
         self.text_area.bind("<KeyRelease>", self.highlight_syntax_realtime)  
