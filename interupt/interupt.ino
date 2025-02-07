@@ -1,6 +1,7 @@
 #include <Modules.h> 
 #include <SPI.h>
 #include <SD.h>
+#include "Wire.h"
 //#include "Arduino.h"
 
 const int PIN_CHIP_S_SD = 7; // Пин для работы с SD картой
