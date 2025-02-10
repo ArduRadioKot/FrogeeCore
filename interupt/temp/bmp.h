@@ -2,7 +2,7 @@
 #define BMP_COMM_H
 
 #include <Adafruit_BMP280.h>   
-#include <Wire.h>
+
 Adafruit_BMP280 bmp; 
 
 class bmp{

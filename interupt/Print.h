@@ -1,7 +1,7 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-#include <Arduino.h>  // For Serial
+//#include <Arduino.h>  // For Serial
 #include "Assign.h"   // Ensure Assign class is declared
 
 // Class for serial printing

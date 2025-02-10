@@ -5,6 +5,7 @@
 #include "Print.h"
 #include "Display.h"
 
+
 // Парсер команд.
 class CommandParser {
 public:
@@ -58,6 +59,9 @@ public:
         else if (command_1 == "display"){
           if(command_2 == "begin"){
               display.DisplayBegin();
+          }
+          else if(command_2 == "test"){
+              display.DisplayTest();
           }
         }
         else {

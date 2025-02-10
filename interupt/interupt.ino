@@ -1,8 +1,9 @@
 #include <Modules.h> 
 #include <SPI.h>
 #include <SD.h>
-#include "Wire.h"
-//#include "Arduino.h"
+#include <Wire.h>
+#include <U8g2lib.h>
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 const int PIN_CHIP_S_SD = 7; // Пин для работы с SD картой
 String fString, fStringFileName, rwBuff;
@@ -10,6 +11,7 @@ String line;
 boolean FileOpen, FileClose, FileReady;
 String file = "/programm.txt"; // Имя файла для чтения с SD карты
 void setup() {
+    u8g2.begin();
     Serial.begin(115200);
     Serial.println("read file");
     FileRead();
