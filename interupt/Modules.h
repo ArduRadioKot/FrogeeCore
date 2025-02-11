@@ -3,7 +3,8 @@
 #include "Del.h"
 #include "Pin.h"
 #include "Print.h"
-#include "Display.h"
+//#include "Display.h"
+#include "Arduino.h"
 
 
 // Парсер команд.
@@ -56,14 +57,14 @@ public:
           params = Aux::trim_space(params);
             del.Delay(params); 
         } //Display.h
-        else if (command_1 == "display"){
+        /*else if (command_1 == "display"){
           if(command_2 == "begin"){
               display.DisplayBegin();
           }
           else if(command_2 == "test"){
               display.DisplayTest();
           }
-        }
+        }*/
         else {
           //Serial.println("Error: command not found");
         }
