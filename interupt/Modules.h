@@ -4,6 +4,7 @@
 #include "Pin.h"
 #include "Print.h"
 #include "Display.h"
+#include "Arduino.h"
 
 
 // Парсер команд.
@@ -62,6 +63,12 @@ public:
           }
           else if(command_2 == "test"){
               display.DisplayTest();
+          }
+          else if(command_2 == "clear"){
+              display.DisplayClear();
+          }
+          else if(command_2 == "print"){
+              display.DisplayPrint(params);
           }
         }
         else {
