@@ -9,10 +9,12 @@ String fString, fStringFileName, rwBuff;
 String line;
 boolean FileOpen, FileClose, FileReady;
 String file = "/programm.txt"; // Имя файла для чтения с SD карты
+
 void setup() {
     Serial.begin(115200);
     Serial.println("read file");
-    //FileRead();
+    FileRead();
+    
 }
 
 void loop() {
