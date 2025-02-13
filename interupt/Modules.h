@@ -3,6 +3,9 @@
 #include "Del.h"
 #include "Pin.h"
 #include "Print.h"
+#include "Display.h"
+#include "Arduino.h"
+
 
 // Парсер команд.
 class CommandParser {
@@ -53,7 +56,22 @@ public:
         } else if (command_1 == "delay"){
           params = Aux::trim_space(params);
             del.Delay(params); 
-        } else {
+        } //Display.h
+        else if (command_1 == "display"){
+          if(command_2 == "begin"){
+              display.DisplayBegin();
+          }
+          else if(command_2 == "test"){
+              display.DisplayTest();
+          }
+          else if(command_2 == "clear"){
+              display.DisplayClear();
+          }
+          else if(command_2 == "print"){
+              display.DisplayPrint(params);
+          }
+        }
+        else {
           //Serial.println("Error: command not found");
         }
     }
