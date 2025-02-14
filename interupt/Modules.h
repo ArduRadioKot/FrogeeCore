@@ -70,6 +70,15 @@ public:
           else if(command_2 == "print"){
               display.DisplayPrint(params);
           }
+          else if(command_2 == "pixel"){
+              display.DisplayPixel(params);
+          }
+          else if(command_2 == "line"){
+              display.DisplayLine(params);
+          }
+          else if(command_2 == "circle"){
+              display.DisplayCircle(params);
+          }
         }
         else {
           //Serial.println("Error: command not found");
