@@ -21,6 +21,7 @@ class Display {
         oled.clear();
       }
       void DisplayPrint(const String &params){
+        oled.autoPrintln(false);
         String param_1 = Aux::trim_space(params.substring(0, params.indexOf('"')));
         String param_2 = params.substring(params.indexOf('"'));
         int dot1 = param_1.indexOf(',');
@@ -58,7 +59,21 @@ class Display {
         int r = param.substring(dot2 + 1).toInt();
         oled.circle(x, y, r, OLED_STROKE);        // окружность с центром в (x,y, с радиусом)
       }
-
+      void DisplayPrintLN(String params){
+        oled.autoPrintln(true);   // автоматически переносить текст
+        if((params.indexOf('"') == 0) && (params.lastIndexOf('"') != -1)){
+          params = params.substring(1, params.indexOf('"', params.indexOf('"') + 1));
+          oled.print((params));
+        }
+        else{
+          
+        }
+      }
+      void DisplaySetScale(const String &params){
+        if(Aux::isNumber(params)){
+          oled.setScale(params.toInt());
+        }
+      }
 };
 
 Display display; 

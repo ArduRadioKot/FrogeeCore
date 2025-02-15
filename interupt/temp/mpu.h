@@ -5,7 +5,7 @@
 Adafruit_ADXL345_Unified accel = Adafruit_ADXL345_Unified(12345); 
 
 class mpu{
-  private:
+  public:
     void mpu_init(){
          accel.begin();
          accel.setRange(ADXL345_RANGE_16_G);

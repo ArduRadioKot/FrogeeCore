@@ -6,7 +6,6 @@
 #include "Display.h"
 #include "Arduino.h"
 
-
 // Парсер команд.
 class CommandParser {
 public:
@@ -78,6 +77,12 @@ public:
           }
           else if(command_2 == "circle"){
               display.DisplayCircle(params);
+          }
+          else if(command_2 == "println"){
+              display.DisplayPrintLN(params);
+          }
+          else if(command_2 == "setScale"){
+              display.DisplaySetScale(params);
           }
         }
         else {
