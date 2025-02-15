@@ -6,17 +6,17 @@
 Adafruit_BMP280 bmp; 
 
 class bmp{
-    private:
+    public:
     void bmp_init(){
         bmp.begin();
     }
-    void read_Pressure(){
+    float read_Pressure(){
         return bmp.readPressure();
     }
-    void read_Temperature(){
+    float read_Temperature(){
         bmp.readTemperature();
     }
-    void read_altitude(){
+    float read_altitude(){
         return bmp.readAltitude();
         }
 

@@ -13,7 +13,7 @@ String file = "/programm.txt"; // Имя файла для чтения с SD к
 void setup() {
     Serial.begin(115200);
     Serial.println("read file");
-    //FileRead();
+    FileRead();
     
 }
 
@@ -37,7 +37,6 @@ void FileRead() {
       FileReady = 1;
     }
   }
-
   while (dataFile.available()) {
     line = dataFile.readStringUntil('\n');
     commandParser.parse(line);
