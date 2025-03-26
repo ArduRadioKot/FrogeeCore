@@ -14,6 +14,7 @@ String file = "/programm.txt"; // Имя файла для чтения с SD к
 void setup() {
     Serial.begin(115200);
     Serial.println("read file");
+    delay(1000);
     FileRead();
 }
 

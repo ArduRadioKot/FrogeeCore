@@ -5,7 +5,7 @@
 #include "Print.h"
 #include "Display.h"
 #include "Arduino.h"
-#include "SD_lib.h"
+//#include "SD_lib.h"
 
 // Парсер команд.
 class CommandParser {
