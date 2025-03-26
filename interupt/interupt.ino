@@ -10,11 +10,12 @@ String line;
 boolean FileOpen, FileClose, FileReady;
 String file = "/programm.txt"; // Имя файла для чтения с SD карты
 
+
 void setup() {
     Serial.begin(115200);
     Serial.println("read file");
+    delay(1000);
     FileRead();
-    
 }
 
 void loop() {
@@ -49,4 +50,3 @@ void FileRead() {
     FileOpen = 0;
   }
 }
-

@@ -4,7 +4,7 @@
 #include <GyverOLED.h>
 #include <Wire.h>
 #include "AuxFunc.h"
-GyverOLED<SSD1306_128x64, OLED_NO_BUFFER> oled;
+GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
 class Display {
 
   public:
