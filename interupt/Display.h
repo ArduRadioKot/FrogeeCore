@@ -11,14 +11,17 @@ class Display {
       void DisplayBegin(){
         oled.init();
         oled.clear();
+        oled.update();
       }
       void DisplayTest(){
         oled.clear();
         oled.setCursorXY(0, 0);
         oled.print("TesT");	// write something to the internal memory
+        oled.update();
       }
       void DisplayClear(){
         oled.clear();
+        oled.update();
       }
       void DisplayPrint(const String &params){
         oled.autoPrintln(false);
@@ -30,6 +33,7 @@ class Display {
         int y = param_1.substring(dot1 + 1).toInt();
         oled.setCursorXY(x, y);
         oled.print(param_2.substring(param_2.indexOf('"') + 1, param_2.indexOf(param_2.indexOf('"'), param_2.indexOf('"')) - 1));
+        oled.update();
       }
       void DisplayPixel(const String &params){
         String param = Aux::trim_space(params);
@@ -38,6 +42,7 @@ class Display {
         int y = param.substring(dot1 + 1).toInt();
         oled.dot(x, y);
         oled.sendBuffer();
+        oled.update();
       }
       void DisplayLine(const String &params){
         String param = Aux::trim_space(params);
@@ -49,6 +54,7 @@ class Display {
         int x2 = param.substring(dot2 + 1, dot3).toInt();
         int y2 = param.substring(dot3 + 1).toInt();
         oled.line(x1, y1, x2, y2);
+        oled.update();
       }
       void DisplayCircle(const String &params){
         String param = Aux::trim_space(params);
@@ -58,12 +64,14 @@ class Display {
         int y = param.substring(dot1 + 1, dot2).toInt();
         int r = param.substring(dot2 + 1).toInt();
         oled.circle(x, y, r, OLED_STROKE);        // окружность с центром в (x,y, с радиусом)
+        oled.update();
       }
       void DisplayPrintLN(String params){
         oled.autoPrintln(true);   // автоматически переносить текст
         if((params.indexOf('"') == 0) && (params.lastIndexOf('"') != -1)){
           params = params.substring(1, params.indexOf('"', params.indexOf('"') + 1));
           oled.print((params));
+          oled.update();
         }
         else{
           
@@ -72,6 +80,7 @@ class Display {
       void DisplaySetScale(const String &params){
         if(Aux::isNumber(params)){
           oled.setScale(params.toInt());
+          oled.update();
         }
       }
 };

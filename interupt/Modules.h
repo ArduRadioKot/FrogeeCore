@@ -5,6 +5,7 @@
 #include "Print.h"
 #include "Display.h"
 #include "Arduino.h"
+//#include "SD_lib.h"
 
 // Парсер команд.
 class CommandParser {
@@ -83,6 +84,11 @@ public:
           }
           else if(command_2 == "setScale"){
               display.DisplaySetScale(params);
+          }
+        }
+        else if(command_1 == "sd"){
+          if(command_2 == "start"){
+              //SD_lib::SDstart("start");
           }
         }
         else {
