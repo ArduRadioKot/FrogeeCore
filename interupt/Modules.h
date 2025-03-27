@@ -1,3 +1,4 @@
+// Modules.h
 #include "AuxFunc.h"
 #include "Assign.h"
 #include "Del.h"
@@ -5,19 +6,19 @@
 #include "Print.h"
 #include "Display.h"
 #include "Arduino.h"
-//#include "SD_lib.h"
+#include "CommandParser.h"
 
 // Парсер команд.
 class CommandParser {
 public:
-    void parse(String args) {
+    void Parse(String args) {
         int startParams = args.indexOf('(');
         int endParams = args.lastIndexOf(')');
         String commands = args.substring(0, startParams);
         String command_1, command_2;
 
         // Разделение команды на основные и подкоманды.
-        if (commands.indexOf(".") != 1) {
+        if (commands.indexOf('.') != -1) {
             int dot = commands.indexOf('.');
             command_1 = commands.substring(0, dot);
             command_2 = commands.substring(dot + 1);
@@ -26,78 +27,95 @@ public:
         }
 
         String params = args.substring(startParams + 1, endParams);
-        // Обработка команд.
-        //Print.h
-        if (command_1 == "print") {
-            if (command_2 == "Serial") {
-                MyPrint::printSerial(params);
-            } else if (command_2 == "lnSerial") {
-                MyPrint::printlnSerial(params);
-            } else {
-                //Serial.println("Error: command not found");
-            }
-        //Pin.h
-        } else if (command_1 == "pin") {
-          params = Aux::trim_space(params);
-            if (command_2 == "read") {
-                Pin::read(params);
-            } else if (command_2 == "write") {
-                Pin::write(params);
-            } else if (command_2 == "init") {
-                Pin::init(params);
-            } else {
-                //Serial.println("Error: command not found");
-            }
-        //Assign.h
-        } else if (command_1 == "assign") {
-          params = Aux::trim_space(params);
-            Assign::tramit_var(params);
-        //Del.h
-        } else if (command_1 == "delay"){
-          params = Aux::trim_space(params);
-            del.Delay(params); 
-        } //Display.h
-        else if (command_1 == "display"){
-          if(command_2 == "begin"){
-              display.DisplayBegin();
-          }
-          else if(command_2 == "test"){
-              display.DisplayTest();
-          }
-          else if(command_2 == "clear"){
-              display.DisplayClear();
-          }
-          else if(command_2 == "print"){
-              display.DisplayPrint(params);
-          }
-          else if(command_2 == "pixel"){
-              display.DisplayPixel(params);
-          }
-          else if(command_2 == "line"){
-              display.DisplayLine(params);
-          }
-          else if(command_2 == "circle"){
-              display.DisplayCircle(params);
-          }
-          else if(command_2 == "println"){
-              display.DisplayPrintLN(params);
-          }
-          else if(command_2 == "setScale"){
-              display.DisplaySetScale(params);
-          }
-        }
-        else if(command_1 == "sd"){
-          if(command_2 == "start"){
-              //SD_lib::SDstart("start");
-          }
-        }
-        else {
-          //Serial.println("Error: command not found");
+
+        // Обработка command_1 через switch-case
+        switch (aux.strHash(command_1.c_str())) {
+            case (CommandHashes::PRINT):
+                // Обработка подкоманд print
+                Pprint(command_2, params);
+                break;
+
+            case CommandHashes::PIN:
+                // Обработка подкоманд pin
+                Ppin(command_2, params);
+                break;
+
+            case CommandHashes::ASSIGN:
+                Passign(command_2, params);
+            case CommandHashes::DELAY:
+                Pdel(command_2, params);
+
+            case (CommandHashes::DISPLAY_CMD):  // Changed from DISPLAY
+                // Обработка подкоманд display
+                Pdisplay(command_2, params);
+                break;
         }
     }
-};
+    private:
+      void Pprint(String cmd, String arg){
+        switch (aux.strHash(cmd.c_str())) {
+            case CommandHashes::PRINT_SERIAL:
+                MyPrint::printSerial(arg);
+                break;
+            case CommandHashes::PRINT_LNSERIAL:
+                MyPrint::printlnSerial(arg);
+                break;
+            }
+      }
+      void Ppin(String cmd, String arg){
+        arg = Aux::trim_space(arg);
+        switch (aux.strHash(cmd.c_str())) {
+           case CommandHashes::PIN_READ:
+               Pin::read(arg);
+               break;
+           case CommandHashes::PIN_WRITE:
+               Pin::write(arg);
+               break;
+           case CommandHashes::PIN_INIT:
+               Pin::init(arg);
+               break;
+        }
+      }
+      void Passign(String cmd, String arg){
+        arg = Aux::trim_space(arg);
+        Assign::tramit_var(arg);
+      }
+      void Pdel(String cmd, String arg){
+        arg = Aux::trim_space(arg);
+        del.Delay(arg);
+      }
+      void Pdisplay(String cmd, String arg){
+        switch (aux.strHash(cmd.c_str())) {
+            case CommandHashes::DISPLAY_BEGIN:
+                display.DisplayBegin();
+                break;
+            case CommandHashes::DISPLAY_TEST:
+                display.DisplayTest();
+                break;
+            case CommandHashes::DISPLAY_CLEAR:
+                display.DisplayClear();
+                break;
+            case CommandHashes::DISPLAY_PRINT:
+                display.DisplayPrint(arg);
+                break;
+            case CommandHashes::DISPLAY_PIXEL:
+                display.DisplayPixel(arg);
+                break;
+            case CommandHashes::DISPLAY_LINE:
+                display.DisplayLine(arg);
+                break;
+            case CommandHashes::DISPLAY_CIRCLE:
+                display.DisplayCircle(arg);
+                break;
+            case CommandHashes::DISPLAY_PRINTLN:
+                display.DisplayPrintLN(arg);
+                break;
+            case CommandHashes::DISPLAY_SETSCALE:
+                display.DisplaySetScale(arg);
+                break;
+        }
+      }
+};  // Added missing semicolon here
 
 // Глобальные объекты.
 CommandParser commandParser;
-
-
