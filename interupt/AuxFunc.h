@@ -15,6 +15,9 @@ public:
       }
       return result;
     }
+    constexpr uint32_t strHash(const char* str, int h = 0) {
+      return !str[h] ? 5381 : (strHash(str, h + 1) * 33) ^ str[h];
+    }
 };
 Aux aux;
 #endif

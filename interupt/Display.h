@@ -4,10 +4,10 @@
 #include <GyverOLED.h>
 #include <Wire.h>
 #include "AuxFunc.h"
-GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
 class Display {
 
   public:
+      static GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
       void DisplayBegin(){
         oled.init();
         oled.clear();
