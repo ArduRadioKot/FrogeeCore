@@ -21,8 +21,7 @@ Development can take place both in the code editor and in any text editor, the r
 - 4 GPIOs, of which 2 can be assigned to the UART interface 
 - ## Where to write the program? 
 - In the code editor: 
-
-	![[photo_2025-03-28_12-29-02 1.jpg]]
+!(photo_2025-03-28_12-29-02 1.jpg)
 
 - In any text editor. 
 
