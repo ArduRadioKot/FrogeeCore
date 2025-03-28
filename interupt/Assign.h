@@ -12,8 +12,6 @@ struct Mem {
 
 Mem variable[Var_cnt]; // Массив для хранения переменных.
 
-
-
 // Класс для работы с переменными.
 class Assign {
 public:
