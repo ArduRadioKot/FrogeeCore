@@ -2,10 +2,10 @@
 #include <SD.h>
 #include <Wire.h>
 #include <GyverOLED.h>
-#include "Modules.h"
+#include "Boot.h"
 
 GyverOLED<SSD1306_128x64, OLED_BUFFER> Display::oled;
-GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
+//GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
 // Конфигурация
 const uint8_t SD_CS = 7;
 const uint8_t BTN_LEFT = 10;
@@ -124,50 +124,8 @@ void handleButtons() {
     }
     
     if (!digitalRead(BTN_CENTER)) {
-        executeSelectedFile();
+        boot.executeSelectedFile(fileList[selectedIndex]);  // Передаем имя файла как аргумент
     }
-}
-
-void executeSelectedFile() {
-    bool trig = false;
-    String filename = "/" + fileList[selectedIndex];
-    File file = SD.open(filename);
-    
-    if (!file) {
-        showError("File Error");
-        return;
-    }
-    
-    oled.clear();
-    oled.setCursorXY(10, 20);
-    oled.print("Executing:");
-    oled.setCursorXY(10, 35);
-    oled.print(fileList[selectedIndex]);
-    oled.update();
-    
-    while (file.available()) {
-        if(!trig){
-          oled.clear();
-          oled.update();
-          trig = true;
-        }
-        String line = file.readStringUntil('\n');
-        line.trim();
-        if (line.length() > 0) commandParser.Parse(line);
-    }
-    
-    file.close();
-    while(true);
-}
-
-void showError(String msg) {
-    oled.clear();
-    oled.setCursorXY(10, 20);
-    oled.print("ERROR:");
-    oled.setCursorXY(10, 35);
-    oled.print(msg);
-    oled.update();
-    delay(2000);
 }
 
 void showFatalError(String msg) {
