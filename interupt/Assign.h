@@ -1,5 +1,6 @@
 #ifndef ASSIGN_H
 #define ASSIGN_H
+
 #include "AuxFunc.h"
 #define Var_cnt 10  // Максимальное количество переменных.
 int varCount = 0;   // Счетчик текущих переменных.
