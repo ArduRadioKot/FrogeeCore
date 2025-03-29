@@ -36,10 +36,12 @@ void setup() {
     initDisplay();
     initButtons();
     
+
     oled.drawBitmap(0, 0, bitmap_128x63, 128, 63);
     oled.update();
     delay(2000);
     oled.clear();   
+
 
     if (!initSDCard()) showFatalError("SD Card Error");
     if (!scanFiles()) showFatalError("No Files Found");
