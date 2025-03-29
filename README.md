@@ -20,8 +20,9 @@ Development can take place both in the code editor and in any text editor, the r
 - 2 i2c interface pins 
 - 4 GPIOs, of which 2 can be assigned to the UART interface 
 - ## Where to write the program? 
-- In the code editor: 
-!(photo_2025-03-28_12-29-02 1.jpg)
+- In the code editor:
+ 
+ ![code](code.jpg)
 
 - In any text editor. 
 
@@ -30,4 +31,4 @@ Development can take place both in the code editor and in any text editor, the r
 display.begin() 
 display.print(0,0, "Hello, World!") 
 ```
-We save it as helloword.txt and run on the device.
+Next save it as helloword.txt and run on the device.
