@@ -8,6 +8,7 @@ The idea of the Core is to quickly prototype devices, due to a large number of b
 ## How to install?
 Development can take place both in the code editor and in any text editor, the resulting code must be written to a SD card and inserted into the device. You can install and run the script in python: Required libraries: customtkinter Or download the executable file from the release. 
 ## Element base 
+![scheme](scheme.png)
 - esp32 c3 supermini 
 - bmp280 
 - mpu6050 
