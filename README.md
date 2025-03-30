@@ -1,5 +1,6 @@
 
 # FrogeeCore
+ ![code](cores.jpeg)
 ## What is it? 
 FrogeeCore (hereinafter referred to as the Core) is a platform designed for rapid prototyping of embedded systems. The core can be used for various types of tasks, such as IoT device development, autonomous wearable devices, training, and more. The Core idea was based on Flipper Zero, M5Stick and M5Atom. 
 ## Why is this? 
