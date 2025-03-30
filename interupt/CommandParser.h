@@ -2,7 +2,7 @@
 namespace CommandHashes {
     constexpr uint32_t PRINT = aux.strHash("print");
     constexpr uint32_t PIN = aux.strHash("pin");
-    constexpr uint32_t ASSIGN = aux.strHash("assign");
+    constexpr uint32_t VAR = aux.strHash("var");
     constexpr uint32_t DELAY = aux.strHash("delay");
     constexpr uint32_t DISPLAY_CMD = aux.strHash("display");  // Changed from DISPLAY
     constexpr uint32_t SD = aux.strHash("sd");
