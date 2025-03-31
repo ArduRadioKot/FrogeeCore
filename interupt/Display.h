@@ -26,15 +26,29 @@ class Display {
       }
       void DisplayPrint(const String &params){
         oled.autoPrintln(false);
-        String param_1 = Aux::trim_space(params.substring(0, params.indexOf('"')));
-        String param_2 = params.substring(params.indexOf('"'));
-        param_1 = param_1.substring(0, param_1.length() - 1);
+        int dot2 = 0;
+        int dt =0;
+        for(int i =0; i <= params.length(); i++){if(params[i] == ','){dt++; if(dt == 2){dot2 =i; break;}}}
+        String param_1 = Aux::trim_space(params.substring(0, dot2));
+        String param_2 = params.substring(dot2 + 1);
+        param_1 = param_1.substring(0, param_1.length());
         int dot1 = param_1.indexOf(',');
-        int dot2 = param_1.indexOf(',', dot1);
         int x = (mdp.check(param_1.substring(0, dot1))).toInt();
         int y = (mdp.check(param_1.substring(dot1 + 1))).toInt();
         oled.setCursorXY(x, y);
-        oled.print(param_2.substring(param_2.indexOf('"') + 1, param_2.indexOf(param_2.indexOf('"'), param_2.indexOf('"')) - 1));
+        if ((param_2.indexOf('"') != -1) && 
+          (param_2.lastIndexOf('"') != -1) && 
+          (param_2.indexOf('"') != param_2.lastIndexOf('"'))) {
+          // Было: lastIndexOf('"') - 1 (это обрезало последний символ)
+          // Стало: lastIndexOf('"') + 1 (чтобы включить всё содержимое в кавычках)
+          oled.print(param_2.substring(
+          param_2.indexOf('"') + 1,      // начинаем после первой кавычки
+          param_2.lastIndexOf('"')       // заканчиваем на последней кавычке (не включая её)
+          ));
+        } else {
+          oled.print(mdp.check(Aux::trim_space(param_2)));
+        }
+        //oled.print(mbp.check(param_2));
         oled.update();
       }
       void DisplayPixel(const String &params){

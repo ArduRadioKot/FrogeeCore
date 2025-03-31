@@ -42,30 +42,45 @@ public:
     }
 
     // Обрабатывает строку с назначением переменной.
-    static void tramit_var(const String &params) {
-        int equal = params.indexOf('=');
-        String name = params.substring(0, equal);
-        String n_var = params.substring(equal + 1);
-        int firstQuo = params.indexOf('"');
-        int secondQuo = params.indexOf(firstQuo, '"');
-
-        if (find_var(n_var) != -1) { // Если n_var - другая переменная.
-            n_var = variable[find_var(n_var)].var;
-        } else if (find_var(name) != -1) { // Если переменная с таким именем уже существует.
-            reWrite_var(find_var(name), n_var);
+static void tramit_var(const String &params) {
+    int firstQuo = params.indexOf('"');
+    int secondQuo = params.indexOf('"', firstQuo + 1);  // Исправлено: ищем вторую кавычку после первой
+    
+    String params1 = Aux::trim_space(params.substring(0, firstQuo != -1 ? firstQuo : params.length()));
+    int equal = params1.indexOf('=');
+    
+    if (equal == -1) return;  // Нет знака равенства - некорректный синтаксис
+    
+    String name = params1.substring(0, equal);
+    String n_var = params1.substring(equal + 1);
+    
+    // Если есть кавычки - это строковая переменная
+    if (firstQuo != -1 && secondQuo != -1) {
+        String strValue = params.substring(firstQuo + 1, secondQuo);
+        assign_var(name, "str", strValue);
+    }
+    // Если переменная уже существует
+    else if (find_var(n_var) != -1) {
+        String existingValue = variable[find_var(n_var)].var;
+        reWrite_var(find_var(name), existingValue);
+    }
+    // Числовые переменные
+    else if (Aux::isNumber(n_var)) {
+        if (n_var.indexOf('.') == -1) {
+            assign_var(name, "int", n_var);
         } else {
-            // Создание новой переменной с определением типа.
-            if ((firstQuo != -1) && (secondQuo != -1)) {
-                assign_var(name, "str", n_var);
-            } else if (Aux::isNumber(n_var)) {
-                if (n_var.indexOf('.') == -1) {
-                    assign_var(name, "int", n_var);
-                } else {
-                    assign_var(name, "float", n_var);
-                }
-            }
+            assign_var(name, "float", n_var);
         }
     }
+    // Если ничего не подошло, возможно, это имя другой переменной
+    else {
+        int varIndex = find_var(n_var);
+        if (varIndex != -1) {
+            n_var = variable[varIndex].var;
+            reWrite_var(find_var(name), n_var);
+        }
+    }
+}
 };
 
 Assign assign;
