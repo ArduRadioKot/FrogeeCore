@@ -40,7 +40,7 @@ public:
                 Ppin(command_2, params);
                 break;
 
-            case CommandHashes::ASSIGN:
+            case CommandHashes::VAR:
                 Passign(command_2, params);
             case CommandHashes::DELAY:
                 Pdel(command_2, params);
