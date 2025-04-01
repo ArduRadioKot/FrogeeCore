@@ -62,7 +62,7 @@ public:
                 break;
             }
       }
-      void Ppin(String cmd, String arg){
+      static void Ppin(String cmd, String arg){
         arg = Aux::trim_space(arg);
         switch (aux.strHash(cmd.c_str())) {
            case CommandHashes::PIN_READ:
@@ -77,7 +77,7 @@ public:
         }
       }
       void Passign(String cmd, String arg){
-        arg = Aux::trim_space(arg);
+        //arg = Aux::trim_space(arg);
         Assign::tramit_var(arg);
       }
       void Pdel(String cmd, String arg){

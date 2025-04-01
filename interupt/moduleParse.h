@@ -2,10 +2,10 @@
 #define MODULEPARSE_H
 #include "Assign.h"
 #include "AuxFunc.h"
-
+//#include "Pin.h"
 class ModuleParse{
 public:
-    String check(const String &in){
+    static String check(const String &in){
       if(aux.isNumber(in)){
         return in;
       }
@@ -17,7 +17,7 @@ public:
 
     }
 private:
-    String module(const String &in){
+    static String module(const String &in){
       
       return "0";
       
