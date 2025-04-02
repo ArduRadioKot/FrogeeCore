@@ -11,6 +11,7 @@ class Display {
       static GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
       void DisplayBegin(){
         oled.init();
+        oled.textMode(BUF_ADD);
         oled.clear();
         oled.update();
       }
@@ -54,8 +55,8 @@ class Display {
       void DisplayPixel(const String &params){
         String param = Aux::trim_space(params);
         int dot1 = param.indexOf(',');
-        int x = param.substring(0, dot1).toInt();
-        int y = param.substring(dot1 + 1).toInt();
+        int x = mdp.check(param.substring(0, dot1)).toInt();
+        int y = mdp.check(param.substring(dot1 + 1)).toInt();
         oled.dot(x, y);
         oled.sendBuffer();
         oled.update();
@@ -65,10 +66,10 @@ class Display {
         int dot1 = param.indexOf(',');
         int dot2 = param.indexOf(',', dot1 + 1);
         int dot3 = param.indexOf(',', dot2 + 1);
-        int x1 = param.substring(0, dot1).toInt();
-        int y1 = param.substring(dot1 + 1, dot2).toInt();
-        int x2 = param.substring(dot2 + 1, dot3).toInt();
-        int y2 = param.substring(dot3 + 1).toInt();
+        int x1 = mdp.check(param.substring(0, dot1)).toInt();
+        int y1 = mdp.check(param.substring(dot1 + 1, dot2)).toInt();
+        int x2 = mdp.check(param.substring(dot2 + 1, dot3)).toInt();
+        int y2 = mdp.check(param.substring(dot3 + 1)).toInt();
         oled.line(x1, y1, x2, y2);
         oled.update();
       }
@@ -76,28 +77,31 @@ class Display {
         String param = Aux::trim_space(params);
         int dot1 = param.indexOf(',');
         int dot2 = param.indexOf(',', dot1 + 1);
-        int x = param.substring(0, dot1).toInt();
-        int y = param.substring(dot1 + 1, dot2).toInt();
-        int r = param.substring(dot2 + 1).toInt();
+        int x = mdp.check(param.substring(0, dot1)).toInt();
+        int y = mdp.check(param.substring(dot1 + 1, dot2)).toInt();
+        int r = mdp.check(param.substring(dot2 + 1)).toInt();
         oled.circle(x, y, r, OLED_STROKE);        // окружность с центром в (x,y, с радиусом)
         oled.update();
       }
       void DisplayPrintLN(String params){
-        oled.autoPrintln(true);   // автоматически переносить текст
-        if((params.indexOf('"') == 0) && (params.lastIndexOf('"') != -1)){
-          params = params.substring(1, params.indexOf('"', params.indexOf('"') + 1));
-          oled.print((params));
-          oled.update();
+        oled.autoPrintln(true);
+        if ((params.indexOf('"') != -1) && 
+          (params.lastIndexOf('"') != -1) && 
+          (params.indexOf('"') != params.lastIndexOf('"'))) {
+          // Было: lastIndexOf('"') - 1 (это обрезало последний символ)
+          // Стало: lastIndexOf('"') + 1 (чтобы включить всё содержимое в кавычках)
+          oled.print(params.substring(
+          params.indexOf('"') + 1,      // начинаем после первой кавычки
+          params.lastIndexOf('"')       // заканчиваем на последней кавычке (не включая её)
+          ));
+        } else {
+          oled.print(mdp.check(Aux::trim_space(params)));
         }
-        else{
-          
-        }
+        oled.update();
       }
       void DisplaySetScale(const String &params){
-        if(Aux::isNumber(params)){
-          oled.setScale(params.toInt());
+          oled.setScale(mdp.check(params).toInt());
           oled.update();
-        }
       }
 };
 
