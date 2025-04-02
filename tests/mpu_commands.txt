@@ -1,0 +1,90 @@
+MPU6050 Commands Reference
+========================
+
+1. Инициализация сенсора
+------------------------
+mpu.init()  - Инициализация MPU6050 сенсора
+
+2. Чтение ускорения
+------------------
+mpu.accX()  - Чтение ускорения по оси X (м/с²)
+Пример использования:
+var(accX = mpu6050.getAccelerationX())
+display.println(accX)
+
+mpu.accY()  - Чтение ускорения по оси Y (м/с²)
+Пример использования:
+var(accY = mpu6050.getAccelerationY())
+display.println(accY)
+
+mpu.accZ()  - Чтение ускорения по оси Z (м/с²)
+Пример использования:
+var(accZ = mpu6050.getAccelerationZ())
+display.println(accZ)
+
+3. Чтение угловой скорости
+-------------------------
+mpu.gyroX()  - Чтение угловой скорости по оси X (рад/с)
+Пример использования:
+var(gyroX = mpu6050.getGyroX())
+display.println(gyroX)
+
+mpu.gyroY()  - Чтение угловой скорости по оси Y (рад/с)
+Пример использования:
+var(gyroY = mpu6050.getGyroY())
+display.println(gyroY)
+
+mpu.gyroZ()  - Чтение угловой скорости по оси Z (рад/с)
+Пример использования:
+var(gyroZ = mpu6050.getGyroZ())
+display.println(gyroZ)
+
+4. Чтение температуры
+--------------------
+mpu.temp()  - Чтение температуры в градусах Цельсия
+Пример использования:
+var(temp = mpu6050.getTemperature())
+display.println(temp)
+
+Пример полной программы:
+-----------------------
+display.begin()
+mpu.init()
+
+display.println("MPU6050 Test")
+display.println("")
+
+var(accX = mpu6050.getAccelerationX())
+display.print("AccX: ")
+display.println(accX)
+display.println("")
+
+var(accY = mpu6050.getAccelerationY())
+display.print("AccY: ")
+display.println(accY)
+display.println("")
+
+var(accZ = mpu6050.getAccelerationZ())
+display.print("AccZ: ")
+display.println(accZ)
+display.println("")
+
+var(gyroX = mpu6050.getGyroX())
+display.print("GyroX: ")
+display.println(gyroX)
+display.println("")
+
+var(gyroY = mpu6050.getGyroY())
+display.print("GyroY: ")
+display.println(gyroY)
+display.println("")
+
+var(gyroZ = mpu6050.getGyroZ())
+display.print("GyroZ: ")
+display.println(gyroZ)
+display.println("")
+
+var(temp = mpu6050.getTemperature())
+display.print("Temp: ")
+display.println(temp)
+display.update() 

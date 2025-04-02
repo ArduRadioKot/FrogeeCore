@@ -7,6 +7,8 @@
 #include "Display.h"
 #include "Arduino.h"
 #include "CommandParser.h"
+#include "bmp.h"
+#include "MPU6050.h"
 
 // Парсер команд.
 class CommandParser {
@@ -48,6 +50,16 @@ public:
             case (CommandHashes::DISPLAY_CMD):  // Changed from DISPLAY
                 // Обработка подкоманд display
                 Pdisplay(command_2, params);
+                break;
+
+            case (CommandHashes::BME):
+                // Обработка подкоманд bme
+                Pbme(command_2, params);
+                break;
+
+            case (CommandHashes::MPU):
+                // Обработка подкоманд mpu
+                Pmpu(command_2, params);
                 break;
         }
     }
@@ -112,6 +124,59 @@ public:
                 break;
             case CommandHashes::DISPLAY_SETSCALE:
                 display.DisplaySetScale(arg);
+                break;
+        }
+      }
+      void Pbme(String cmd, String arg) {
+        switch (aux.strHash(cmd.c_str())) {
+            case CommandHashes::BME_INIT:
+                bmeComm.bme_init();
+                break;
+            case CommandHashes::BME_TEMP:
+                Serial.println(bmeComm.read_Temperature());
+                break;
+            case CommandHashes::BME_PRES:
+                Serial.println(bmeComm.read_Pressure());
+                break;
+            case CommandHashes::BME_HUM:
+                Serial.println(bmeComm.read_Humidity());
+                break;
+            case CommandHashes::BME_ALT:
+                Serial.println(bmeComm.read_Altitude());
+                break;
+            case CommandHashes::BME_PRES_HPA:
+                Serial.println(bmeComm.read_Pressure_hPa());
+                break;
+            case CommandHashes::BME_PRES_MMHG:
+                Serial.println(bmeComm.read_Pressure_mmHg());
+                break;
+        }
+      }
+      void Pmpu(String cmd, String arg) {
+        switch (aux.strHash(cmd.c_str())) {
+            case CommandHashes::MPU_INIT:
+                mpu6050.begin();
+                break;
+            case CommandHashes::MPU_ACCX:
+                Serial.println(mpu6050.getAccelerationX());
+                break;
+            case CommandHashes::MPU_ACCY:
+                Serial.println(mpu6050.getAccelerationY());
+                break;
+            case CommandHashes::MPU_ACCZ:
+                Serial.println(mpu6050.getAccelerationZ());
+                break;
+            case CommandHashes::MPU_GYROX:
+                Serial.println(mpu6050.getGyroX());
+                break;
+            case CommandHashes::MPU_GYROY:
+                Serial.println(mpu6050.getGyroY());
+                break;
+            case CommandHashes::MPU_GYROZ:
+                Serial.println(mpu6050.getGyroZ());
+                break;
+            case CommandHashes::MPU_TEMP:
+                Serial.println(mpu6050.getTemperature());
                 break;
         }
       }

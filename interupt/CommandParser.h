@@ -6,6 +6,8 @@ namespace CommandHashes {
     constexpr uint32_t DELAY = aux.strHash("delay");
     constexpr uint32_t DISPLAY_CMD = aux.strHash("display");  // Changed from DISPLAY
     constexpr uint32_t SD = aux.strHash("sd");
+    constexpr uint32_t BME = aux.strHash("bme");
+    constexpr uint32_t MPU = aux.strHash("mpu");
 
     // Подкоманды для "print"
     constexpr uint32_t PRINT_SERIAL = aux.strHash("Serial");
@@ -29,4 +31,23 @@ namespace CommandHashes {
 
     // Подкоманды для "sd"
     constexpr uint32_t SD_START = aux.strHash("start");
+
+    // Подкоманды для "bme"
+    constexpr uint32_t BME_INIT = aux.strHash("init");
+    constexpr uint32_t BME_TEMP = aux.strHash("temp");
+    constexpr uint32_t BME_PRES = aux.strHash("pres");
+    constexpr uint32_t BME_HUM = aux.strHash("hum");
+    constexpr uint32_t BME_ALT = aux.strHash("alt");
+    constexpr uint32_t BME_PRES_HPA = aux.strHash("presHpa");
+    constexpr uint32_t BME_PRES_MMHG = aux.strHash("presMmhg");
+
+    // Подкоманды для "mpu"
+    constexpr uint32_t MPU_INIT = aux.strHash("init");
+    constexpr uint32_t MPU_ACCX = aux.strHash("accX");
+    constexpr uint32_t MPU_ACCY = aux.strHash("accY");
+    constexpr uint32_t MPU_ACCZ = aux.strHash("accZ");
+    constexpr uint32_t MPU_GYROX = aux.strHash("gyroX");
+    constexpr uint32_t MPU_GYROY = aux.strHash("gyroY");
+    constexpr uint32_t MPU_GYROZ = aux.strHash("gyroZ");
+    constexpr uint32_t MPU_TEMP = aux.strHash("temp");
 }
