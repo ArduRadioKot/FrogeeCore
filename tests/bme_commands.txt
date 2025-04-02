@@ -1,0 +1,82 @@
+BME280 Commands Reference
+=======================
+
+1. Инициализация сенсора
+------------------------
+bme.init()  - Инициализация BME280 сенсора
+
+2. Чтение температуры
+--------------------
+bme.temp()  - Чтение температуры в градусах Цельсия
+Пример использования:
+var(temp = bmeComm.read_Temperature())
+display.println(temp)
+
+3. Чтение давления
+-----------------
+bme.pres()  - Чтение давления в Паскалях (Па)
+Пример использования:
+var(pres = bmeComm.read_Pressure())
+display.println(pres)
+
+bme.presHpa()  - Чтение давления в гектопаскалях (гПа)
+Пример использования:
+var(presHpa = bmeComm.read_Pressure_hPa())
+display.println(presHpa)
+
+bme.presMmhg()  - Чтение давления в миллиметрах ртутного столба (мм рт.ст.)
+Пример использования:
+var(presMmhg = bmeComm.read_Pressure_mmHg())
+display.println(presMmhg)
+
+4. Чтение влажности
+------------------
+bme.hum()  - Чтение относительной влажности в процентах (%)
+Пример использования:
+var(hum = bmeComm.read_Humidity())
+display.println(hum)
+
+5. Чтение высоты
+---------------
+bme.alt()  - Чтение высоты над уровнем моря в метрах (м)
+Пример использования:
+var(alt = bmeComm.read_Altitude())
+display.println(alt)
+
+Пример полной программы:
+-----------------------
+display.begin()
+bme.init()
+
+display.println("BME280 Test")
+display.println("")
+
+var(temp = bmeComm.read_Temperature())
+display.print("Temp: ")
+display.println(temp)
+display.println("")
+
+var(pres = bmeComm.read_Pressure())
+display.print("Pres: ")
+display.println(pres)
+display.println("")
+
+var(hum = bmeComm.read_Humidity())
+display.print("Hum: ")
+display.println(hum)
+display.println("")
+
+var(alt = bmeComm.read_Altitude())
+display.print("Alt: ")
+display.println(alt)
+display.println("")
+
+var(presHpa = bmeComm.read_Pressure_hPa())
+display.print("Pres(hPa): ")
+display.println(presHpa)
+display.println("")
+
+var(presMmhg = bmeComm.read_Pressure_mmHg())
+display.print("Pres(mmHg): ")
+display.println(presMmhg)
+display.update() 
