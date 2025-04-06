@@ -1,5 +1,8 @@
 // MPU6050.h
-#include <basicMPU6050.h>
+#ifndef MPU6050_H
+#define MPU6050_H
+
+#include "basicMPU6050.h"
 
 class MPU6050 {
 public:
@@ -46,3 +49,5 @@ private:
 
 // Глобальный объект MPU6050
 MPU6050 mpu6050; 
+
+#endif

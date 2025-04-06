@@ -1,5 +1,5 @@
 #ifndef PIN_H
-#define PIN_H
+#define PIN_H 
 #include "moduleParse.h"
 class Pin {
 public:
@@ -8,7 +8,7 @@ public:
         int dot = params.indexOf(',');
         String pinStr = params.substring(0, dot);
         String mode = params.substring(dot + 1);
-        int pin = mdp.check(pinStr).toInt();
+        int pin = (mdp.check(pinStr)).toInt();
         if (mode == "input") {
             pinMode(pin, INPUT);
         } else if (mode == "output") {
@@ -17,16 +17,18 @@ public:
     }
 
     // Чтение значения с пина.
-    static void read(const String &params) {
+    static int read(const String &params) {
         int dot = params.indexOf(',');
         String type = params.substring(0, dot);
         String pinStr = params.substring(dot + 1);
-        int pin = mdp.check(pinStr).toInt();
+        int pin = (mdp.check(pinStr)).toInt();
         if (type == "an") {
             int value = analogRead(pin);
+            return value;
             Serial.println(value);
         } else if (type == "dg") {
             int value = digitalRead(pin);
+            return value;
             Serial.println(value);
         }
     }
@@ -40,7 +42,7 @@ public:
         String pinStr = params.substring(firstDot + 1, secondDot);
         String valueStr = params.substring(secondDot + 1);
 
-        int pin = mdp.check(pinStr).toInt();
+        int pin = (mdp.check(pinStr)).toInt();
         int value = mdp.check(valueStr).toInt();
 
         if (type == "an") {
@@ -51,5 +53,4 @@ public:
     }
 };
 Pin pin;
-
-#endif
+#endif 
