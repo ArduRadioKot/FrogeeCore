@@ -5,9 +5,8 @@
 #include "Boot.h"
 #include "egg.h"
 
-// Определяем глобальные объекты
 GyverOLED<SSD1306_128x64, OLED_BUFFER> Display::oled;
-CommandParser commandParser;  // Определение глобального объекта
+
 //GyverOLED<SSD1306_128x64, OLED_BUFFER> oled;
 // Конфигурация
 const uint8_t SD_CS = 7;
