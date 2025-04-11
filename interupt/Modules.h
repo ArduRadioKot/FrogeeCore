@@ -7,6 +7,7 @@
 #include "Display.h"
 #include "Arduino.h"
 #include "CommandParser.h"
+#include "MPU6050.h"
 
 // Парсер команд.
 class CommandParser {
@@ -48,6 +49,9 @@ public:
             case (CommandHashes::DISPLAY_CMD):  // Changed from DISPLAY
                 // Обработка подкоманд display
                 Pdisplay(command_2, params);
+                break;
+            case (CommandHashes::MPU):
+                Pmpu(command_2, params);
                 break;
         }
     }
@@ -114,6 +118,14 @@ public:
                 display.DisplaySetScale(arg);
                 break;
         }
+      }
+      void Pmpu(String cmd, String arg){
+        switch(aux.strHash(cmd.c_str())){
+            case CommandHashes::MPU_BEGIN:
+            mpu6050.begin();
+            break;
+        }
+
       }
 };  // Added missing semicolon here
 
