@@ -2,7 +2,7 @@
 #define BMP_COMM_H
 
 #include <GyverBME280.h>
-#include "moduleParse.h"
+
 
 GyverBME280 bme;
 
