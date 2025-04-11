@@ -6,6 +6,8 @@ namespace CommandHashes {
     constexpr uint32_t DELAY = aux.strHash("delay");
     constexpr uint32_t DISPLAY_CMD = aux.strHash("display");  // Changed from DISPLAY
     constexpr uint32_t SD = aux.strHash("sd");
+    constexpr uint32_t MPU = aux.strHash("mpu");
+
 
     // Подкоманды для "print"
     constexpr uint32_t PRINT_SERIAL = aux.strHash("Serial");
@@ -29,4 +31,7 @@ namespace CommandHashes {
 
     // Подкоманды для "sd"
     constexpr uint32_t SD_START = aux.strHash("start");
+
+    // Подкоманды для "mpu"
+    constexpr uint32_t MPU_BEGIN = aux.strHash("begin");
 }
