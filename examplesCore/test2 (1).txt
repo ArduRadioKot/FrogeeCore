@@ -1,0 +1,29 @@
+mpu.begin()
+display.begin()
+
+// Обновляем данные с MPU6050
+mpu.update()
+
+// Получаем значения акселерометра и сохраняем в переменные
+mpu.accelX(x)
+mpu.accelY(y)
+mpu.accelZ(z)
+
+// Очищаем дисплей
+display.clear()
+
+// Выводим значения на дисплей
+display.print(0, 0, "X: ")
+display.print(20, 0, x)
+
+display.print(0, 16, "Y: ")
+display.print(20, 16, y)
+
+display.print(0, 32, "Z: ")
+display.print(20, 32, z)
+
+// Обновляем дисплей
+display.update()
+
+// Небольшая задержка
+delay(100)

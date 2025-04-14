@@ -1,0 +1,35 @@
+display.begin()
+bme.init()
+
+display.println("BME280 Test")
+display.println("")
+
+var(temp = bmeComm.read_Temperature())
+display.print("Temp: ")
+display.println(temp)
+display.println("")
+
+var(pres = bmeComm.read_Pressure())
+display.print("Pres: ")
+display.println(pres)
+display.println("")
+
+var(hum = bmeComm.read_Humidity())
+display.print("Hum: ")
+display.println(hum)
+display.println("")
+
+var(alt = bmeComm.read_Altitude())
+display.print("Alt: ")
+display.println(alt)
+display.println("")
+
+var(presHpa = bmeComm.read_Pressure_hPa())
+display.print("Pres(hPa): ")
+display.println(presHpa)
+display.println("")
+
+var(presMmhg = bmeComm.read_Pressure_mmHg())
+display.print("Pres(mmHg): ")
+display.println(presMmhg)
+display.update()
