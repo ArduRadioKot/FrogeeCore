@@ -24,7 +24,7 @@ Development can take place both in the code editor and in any text editor, the r
 - ## Where to write the program? 
 - In the code editor:
  
- ![code](code.jpg)
+ ![code](red.jpg)
 
 - In any text editor. 
 
