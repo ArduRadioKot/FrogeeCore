@@ -1,0 +1,5 @@
+var(text = "This text - test-text")
+display.init()
+display.println(text)
+delay(20)
+print.lnSerial(text)

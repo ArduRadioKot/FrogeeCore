@@ -1,0 +1,3 @@
+display.begin
+display.print("hello world")
+display.print("hello frogeecore")

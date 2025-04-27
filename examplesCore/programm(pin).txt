@@ -1,0 +1,11 @@
+var(pin1 = 2)
+var(pin2 = 3)
+var(val1 = 20)
+var(val2 = 40)
+display.begin()
+pin.init(pin1, output)
+pin.init(pin2, output)
+pin.write(an, pin1, val1)
+pin.write(an, pin2, val2)
+display.println("Success!")
+
