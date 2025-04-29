@@ -34,4 +34,6 @@ namespace CommandHashes {
 
     // Подкоманды для "mpu"
     constexpr uint32_t MPU_BEGIN = aux.strHash("begin");
+    // 
+    constexpr uint32_t LOOP = aux.strHash("loop");
 }

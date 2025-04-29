@@ -1,4 +1,6 @@
 // Modules.h
+#ifndef MODULES_H
+#define MODULES_H
 #include "AuxFunc.h"
 #include "Assign.h"
 #include "Del.h"
@@ -8,6 +10,7 @@
 #include "Arduino.h"
 #include "CommandParser.h"
 #include "MPU6050.h"
+//#include "Boot.h"
 
 // Парсер команд.
 class CommandParser {
@@ -52,6 +55,9 @@ public:
                 break;
             case (CommandHashes::MPU):
                 Pmpu(command_2, params);
+                break;
+            case (CommandHashes::LOOP):
+                //looping = true;
                 break;
         }
     }
@@ -131,3 +137,4 @@ public:
 
 // Глобальные объекты.
 CommandParser commandParser;
+#endif
