@@ -39,6 +39,10 @@ private:
         if(command_1 == "mpu"){
           if(command_2 == "ax"){
             return String(mpu6050.getAccelerationX());
+          } else if(command_2 == "ay"){
+            return String(mpu6050.getAccelerationY());
+          } else if(command_2 == "az"){
+            return String(mpu6050.getAccelerationZ());
           }
         }
       
